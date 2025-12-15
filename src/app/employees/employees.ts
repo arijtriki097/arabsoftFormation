@@ -233,12 +233,11 @@ export class EmployeesComponent implements OnInit {
       this.showNotification('Format de téléphone invalide (minimum 8 chiffres)', 'error');
       return;
     }
-
-    // ✅ Validation du département (optionnel mais si sélectionné, doit être valide)
-    if (this.newEmployee.departement.id && !this.allDepartments.some(d => d.id === this.newEmployee.departement.id)) {
-      this.showNotification('Département invalide', 'error');
-      return;
-    }
+//departement
+   if (this.newEmployee.departement.id && !this.allDepartments.some(d => d.id == this.newEmployee.departement.id)) {
+  this.showNotification('Département invalide', 'error');
+  return;
+}
 
     // ✅ Tout est valide, procéder à l'ajout
     const employeeToSend = {

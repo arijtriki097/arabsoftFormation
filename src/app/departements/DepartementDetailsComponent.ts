@@ -75,4 +75,6 @@ export class DepartementDetailsComponent implements OnInit {
   goToRegion() {
     this.router.navigate(['/regions', this.departement.region.id]);
   }
+
+  
 }

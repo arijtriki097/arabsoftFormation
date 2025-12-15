@@ -1,4 +1,4 @@
-< class="page-container">
+
 
   <!-- ✅ NOTIFICATION SIMPLE avec *ngIf -->
   <div *ngIf="notification.show" 
@@ -184,7 +184,7 @@
     <div class="form-group">
       <label>Département <span style="color: #ef4444;">*</span></label> 
       <select [(ngModel)]="newEmployee.departement.id" name="departmentId">
-        <option [value]="null">-- Sans département --</option>
+        <option [ngValue]="null">-- Sans département --</option>
         <option *ngFor="let dept of allDepartments" [value]="dept.id">{{ dept.name }}</option>
       </select>
       <div *ngIf="formErrors.departement" class="error-message">
