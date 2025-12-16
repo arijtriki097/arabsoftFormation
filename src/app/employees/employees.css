@@ -378,3 +378,118 @@ td { padding: 1.25rem 1.5rem; color: #2d3748; border-bottom: 1px solid #f1f5f9; 
 .input-error {
   border-color: #ef4444;
 }
+/* ----------------- Formulaire (Ajout) ----------------- */
+
+/* (Laisser le form-grid d'origine pour l'ajout) */
+
+.form-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:1.5rem; padding:2rem; }
+
+.form-actions { grid-column:1/-1; display:flex; justify-content:flex-end; gap:1rem; padding-top:1rem; border-top:1px solid #e2e8f0; }
+
+
+
+
+
+/* NOUVELLE GRILLE POUR L'ÉDITION */
+
+.form-grid-edit { 
+
+    display: grid; 
+
+    grid-template-columns: 1fr; /* Une seule colonne de base */
+
+    gap: 1.5rem; 
+
+    padding: 2rem; 
+
+}
+
+
+
+/* Style des sections dans la modal d'édition */
+
+.edit-section {
+
+    padding: 1.5rem;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: #f9fafc;
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+    gap: 1rem;
+
+    align-items: flex-start;
+
+}
+
+
+
+.edit-section h4 {
+
+    grid-column: 1 / -1;
+
+    margin-top: 0;
+
+    margin-bottom: 1rem;
+
+    color: #4a5568;
+
+    font-size: 1.1rem;
+
+    font-weight: 700;
+
+    padding-bottom: 0.5rem;
+
+    border-bottom: 1px dashed #e2e8f0;
+
+}
+
+
+
+/* Actions du formulaire de modification */
+
+.form-actions-edit { 
+
+    display: flex; 
+
+    justify-content: flex-end; 
+
+    gap: 1rem; 
+
+    padding: 1.5rem 2rem 2rem 2rem; /* Bordure non nécessaire car les sections la créent */
+
+    margin-top: -0.5rem;
+
+}
+
+
+
+/* ... (Le reste du CSS des modals/boutons reste inchangé) ... */
+
+
+
+
+
+/* Ajustement du Media Query pour la nouvelle grille d'édition */
+
+@media(max-width:768px){
+
+    /* ... (autres styles existants) ... */
+
+    
+
+    /* Assurer que les sections d'édition passent bien en colonne */
+
+    .edit-section {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}

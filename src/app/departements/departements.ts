@@ -45,7 +45,7 @@ export class DepartementsComponent implements OnInit {
   successMessage = '';
 
   // --------------------------
-  // Modal d’édition
+  // Modal d'édition
   // --------------------------
   showEditModal = false;
 
@@ -60,43 +60,39 @@ export class DepartementsComponent implements OnInit {
   // 📌 CHARGEMENT DES DONNÉES
   // ============================================================
 
-ngOnInit(): void {
-  this.loadRegions(); 
-}
+  ngOnInit(): void {
+    this.loadRegions(); 
+  }
 
-loadRegions() {
-  this.regionService.getAll().subscribe({
-    next: regions => {
-      this.regions = regions;
-      console.log("Régions récupérées :", this.regions);
+  loadRegions() {
+    this.regionService.getAll().subscribe({
+      next: regions => {
+        this.regions = regions;
+        
 
-      // Charger les départements après avoir récupéré les régions
-      this.loadDepartements();
-    },
-    error: err => console.error("Erreur récupération régions:", err)
-  });
-}
+        // Charger les départements après avoir récupéré les régions
+        this.loadDepartements();
+      },
+      error: err => console.error("Erreur récupération régions:", err)
+    });
+  }
 
-loadDepartements() {
-  this.departementService.getAll().subscribe({
-    next: data => {
-      this.departements = data.map(dep => {
-        return { 
-          ...dep, 
-          regionName: dep.region ? dep.region.name : 'Région inconnue'
-        };
-      });
-
-      // Vérification console
-      this.departements.forEach(dep => {
-        console.log(`Département: ${dep.name}, Région: ${dep.regionName}`);
-      });
-
-      this.cdRef.detectChanges();
-    },
-    error: err => console.error("Erreur chargement départements:", err)
-  });
-}
+  loadDepartements() {
+    this.departementService.getAll().subscribe({
+      next: data => {
+        this.departements = data.map(dep => {
+          return { 
+            ...dep, 
+            regionName: dep.region ? dep.region.name : 'Région inconnue',
+            // S'assurer que les employés sont bien présents (utiliser employes avec 's')
+            employes: dep.employes || []
+          };
+        });
+        this.cdRef.detectChanges();
+      },
+      error: err => console.error("Erreur chargement départements:", err)
+    });
+  }
 
 
   // ============================================================
@@ -147,15 +143,60 @@ loadDepartements() {
   }
 
   // ============================================================
-  // 📌 SUPPRESSION
+  // 📌 SUPPRESSION AVEC VÉRIFICATION EMPLOYÉS
   // ============================================================
 
   deleteDepartement(id: number) {
-    if (!confirm("Voulez-vous vraiment supprimer ce département ?")) return;
+    
+    // Récupérer les détails du département depuis l'API
+    this.departementService.getById(id).subscribe({
+      next: (departement) => {
 
+        const hasEmployees = departement.employes && departement.employes.length > 0;
+        const employeeCount = hasEmployees ? departement.employes.length : 0;
+
+        let confirmMessage = '';
+        
+        if (hasEmployees) {
+          // Message si hasEmployees
+          confirmMessage = `⚠️ ATTENTION ⚠️\n\n` +
+            `Ce département contient ${employeeCount} employé(s).\n\n` +
+            `Si vous supprimez ce département, tous les employés associés perdront leur affectation.\n\n` +
+            `Êtes-vous sûr de vouloir continuer ?`;
+        } else {
+          // Message standard si pas d'employés
+          confirmMessage = "Voulez-vous vraiment supprimer ce département ?";
+        }
+
+        // Demander confirmation
+        if (confirm(confirmMessage)) {
+          this.performDelete(id, hasEmployees, employeeCount);
+        }
+      },
+      error: (err) => {
+        // En cas d'erreur, on demande quand même confirmation
+        if (confirm("Voulez-vous vraiment supprimer ce département ?")) {
+          this.performDelete(id, false, 0);
+        }
+      }
+    });
+  }
+
+  // Méthode privée pour effectuer la suppression
+  private performDelete(id: number, hadEmployees: boolean, employeeCount: number = 0) {
     this.departementService.delete(id).subscribe({
-      next: () => this.loadDepartements(),
-      error: err => console.error("Erreur suppression:", err)
+      next: () => {
+        if (hadEmployees) {
+          this.showSuccess(`Département supprimé. ${employeeCount} employé(s) ont été désaffectés.`);
+        } else {
+          this.showSuccess("Département supprimé avec succès !");
+        }
+        this.loadDepartements();
+      },
+      error: err => {
+        console.error("Erreur suppression:", err);
+        this.showError("Erreur lors de la suppression du département.");
+      }
     });
   }
 
@@ -166,62 +207,58 @@ loadDepartements() {
   viewDepartementDetails(id: number) {
     this.router.navigate(['/departements', id]);
   }
-// ============================================================
-// 📌 MODAL → ÉDITION
-// ============================================================
 
-openEditModal(dep: any) {
-  this.editDepartement = {
-    id: dep.id,
-    name: dep.name,
-    regionId: dep.region?.id || ''  
-  };
+  // ============================================================
+  // 📌 MODAL → ÉDITION
+  // ============================================================
+
+  openEditModal(dep: any) {
+    this.editDepartement = {
+      id: dep.id,
+      name: dep.name,
+      regionId: dep.region?.id || ''  
+    };
+    
+   
+    this.showEditModal = true;
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.resetMessages();
+  }
+
+  updateDepartement() {
+    this.resetMessages();
+
+    if (!this.editDepartement.id) return;
+    if (!this.editDepartement.name.trim()) {
+      return this.showError("Le nom du département est obligatoire !");
+    }
+    if (!this.editDepartement.regionId) {
+      return this.showError("Veuillez sélectionner une région !");
+    }
+
+    const updated = {
+      name: this.editDepartement.name.trim(),
+      regionId: Number(this.editDepartement.regionId)
+    };
+
   
-  console.log('Édition département:', this.editDepartement); 
-  this.showEditModal = true;
-}
 
-closeEditModal() {
-  this.showEditModal = false;
-  this.resetMessages();
-}
-
-updateDepartement() {
-  this.resetMessages();
-
-  if (!this.editDepartement.id) return;
-  if (!this.editDepartement.name.trim()) {
-    return this.showError("Le nom du département est obligatoire !");
+    this.departementService.updateDepartement(this.editDepartement.id, updated)
+      .subscribe({
+        next: () => {
+          this.closeEditModal();
+          this.showSuccess("Département mis à jour avec succès !");
+          this.loadDepartements();
+        },
+        error: (err) => {
+          console.error('Erreur mise à jour:', err);
+          this.showError("Erreur lors de la modification.");
+        }
+      });
   }
-  if (!this.editDepartement.regionId) {
-    return this.showError("Veuillez sélectionner une région !");
-  }
-
-  const updated = {
-    name: this.editDepartement.name.trim(),
-    regionId: Number(this.editDepartement.regionId)  // Convertir en nombre
-  };
-
-  console.log('Envoi mise à jour:', updated); 
-
-  this.departementService.updateDepartement(this.editDepartement.id, updated)
-    .subscribe({
-      next: () => {
-        // FERMER LE MODAL IMMÉDIATEMENT
-        this.closeEditModal();
-        
-        // AFFICHER LE MESSAGE APRÈS
-        this.showSuccess("Département mis à jour avec succès !");
-        
-        // RECHARGER LES DONNÉES
-        this.loadDepartements();
-      },
-      error: (err) => {
-        console.error('Erreur mise à jour:', err);
-        this.showError("Erreur lors de la modification.");
-      }
-    });
-}
 
   // ============================================================
   // 📌 NOTIFICATIONS
@@ -241,4 +278,5 @@ updateDepartement() {
     this.errorMessage = '';
     this.successMessage = '';
   }
+  
 }

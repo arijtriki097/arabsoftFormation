@@ -1,292 +1,621 @@
-< class="page-container">
+
 
   <!-- ✅ NOTIFICATION SIMPLE avec *ngIf -->
+
   <div *ngIf="notification.show" 
+
        style="position: fixed; 
+
               top: 20px; 
+
               right: 20px; 
+
               min-width: 350px; 
+
               max-width: 500px;
+
               background: white; 
+
               border-radius: 12px; 
+
               box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+
               padding: 18px 20px;
+
               z-index: 99999;
+
               display: flex;
+
               align-items: center;
+
               gap: 15px;
+
               animation: slideInRight 0.4s ease-out;"
+
        [style.border-left]="'4px solid ' + (notification.type === 'success' ? '#10b981' : notification.type === 'error' ? '#ef4444' : '#3b82f6')">
+
     
+
     <!-- Icon -->
+
     <div style="flex-shrink: 0;">
+
       <svg *ngIf="notification.type === 'success'" 
+
            width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5">
+
         <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+
         <polyline points="22 4 12 14.01 9 11.01"/>
+
       </svg>
+
       
+
       <svg *ngIf="notification.type === 'error'" 
+
            width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5">
+
         <circle cx="12" cy="12" r="10"/>
+
         <line x1="15" y1="9" x2="9" y2="15"/>
+
         <line x1="9" y1="9" x2="15" y2="15"/>
+
       </svg>
+
       
+
       <svg *ngIf="notification.type === 'info'" 
+
            width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5">
+
         <circle cx="12" cy="12" r="10"/>
+
         <line x1="12" y1="16" x2="12" y2="12"/>
+
         <line x1="12" y1="8" x2="12.01" y2="8"/>
+
       </svg>
+
     </div>
+
     
+
     <!-- Message -->
+
     <div style="flex: 1;">
+
       <div style="font-weight: 600; font-size: 15px; color: #1a1a1a; margin-bottom: 2px;">
+
         {{ notification.type === 'success' ? '✓ Succès' : notification.type === 'error' ? '✗ Erreur' : 'ℹ Information' }}
+
       </div>
+
       <div style="font-size: 14px; color: #6b7280;">
+
         {{ notification.message }}
+
       </div>
+
     </div>
+
     
+
     <!-- Close Button -->
+
     <button (click)="closeNotification()" 
+
             style="background: none; 
+
                    border: none; 
+
                    font-size: 22px; 
+
                    color: #9ca3af; 
+
                    cursor: pointer;
+
                    padding: 4px;
+
                    width: 28px;
+
                    height: 28px;
+
                    display: flex;
+
                    align-items: center;
+
                    justify-content: center;
+
                    border-radius: 6px;
+
                    transition: all 0.2s;
+
                    line-height: 1;"
+
             onmouseover="this.style.background='#f3f4f6'; this.style.color='#1a1a1a'"
+
             onmouseout="this.style.background='transparent'; this.style.color='#9ca3af'">
+
       ×
+
     </button>
+
   </div>
+
+
 
   <!-- PAGE HEADER -->
+
   <div class="page-header">
+
     <div class="header-content">
+
       <h1>
+
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+
           <circle cx="9" cy="7" r="4"/>
+
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+
           <path d="M16.5 3.13a4 4 0 0 1 0 7.75"/>
+
         </svg>
+
         Gestion des Employés
+
       </h1>
+
       <p class="subtitle">{{ employees.length }} employé(s) enregistré(s)</p>
+
     </div>
+
     <div style="display: flex; gap: 10px;">
-      <!-- 🔍 BOUTON DE TEST - Supprimez après avoir vérifié -->
-    
+
+          
+
       
+
       <button class="btn-primary" (click)="showAddForm = !showAddForm">
+
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
           <line x1="12" y1="5" x2="12" y2="19"/>
+
           <line x1="5" y1="12" x2="19" y2="12"/>
+
         </svg>
+
         {{ showAddForm ? 'Annuler' : 'Nouvel employé' }}
+
       </button>
+
     </div>
+
   </div>
 
-  <!-- FILTRES REGION & DEPARTEMENT -->
-  <div class="filters">
+
+
+    <div class="filters">
+
     <div class="form-group">
+
       <label>Filtrer par Région</label>
+
       <select [(ngModel)]="selectedRegionId" (change)="onRegionChange()">
+
         <option [value]="null">-- Toutes les régions --</option>
+
         <option *ngFor="let region of regions" [value]="region.id">{{ region.name }}</option>
+
       </select>
+
     </div>
 
+
+
     <div class="form-group">
+
       <label>Filtrer par Département</label>
+
       <select [(ngModel)]="selectedDepartementId" (change)="onDepartementChange()">
+
         <option [value]="null">-- Tous les départements --</option>
+
         <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+
       </select>
+
+      
+
     </div>
 
-    <!-- ✅ Utilise la méthode resetFilters() -->
-    <button class="btn-secondary" (click)="resetFilters()">
+
+
+        <button class="btn-secondary" (click)="resetFilters()">
+
       Réinitialiser les filtres
+
     </button>
+
   </div>
 
- <!-- FORMULAIRE AJOUT -->
-<div class="add-form-card" [class.show]="showAddForm">
+
+
+ <div class="add-form-card" [class.show]="showAddForm">
+
   <div class="card-header">
+
     <h3>Ajouter un nouvel employé</h3>
+
   </div>
+
   <form class="form-grid" (submit)="addEmployee(); $event.preventDefault()">
+
     
+
 <div class="form-group">
+
   <label>Nom complet <span style="color: #ef4444;">*</span></label>
+
   <div *ngIf="formErrors.name" class="error-message">{{ formErrors.name }}</div>
+
   <input 
+
     type="text" 
+
     [(ngModel)]="newEmployee.name" 
+
     name="name" 
+
     placeholder="Jean Dupont"
+
     [class.input-error]="formErrors.name"
+
     (blur)="validateAddForm()">
+
 </div>
 
+
+
 <div class="form-group">
+
   <label>Adresse <span style="color: #ef4444;">*</span></label>
+
   <div *ngIf="formErrors.address" class="error-message">{{ formErrors.address }}</div>
+
   <input 
+
     type="text" 
+
     [(ngModel)]="newEmployee.address" 
+
     name="address" 
+
     placeholder="123 Rue de la République"
+
     [class.input-error]="formErrors.address"
+
     (blur)="validateAddForm()">
+
 </div>
 
+
+
 <div class="form-group">
+
   <label>Email <span style="color: #ef4444;">*</span></label>
+
   <div *ngIf="formErrors.email" class="error-message">{{ formErrors.email }}</div>
+
   <input 
+
     type="email" 
+
     [(ngModel)]="newEmployee.email" 
+
     name="email" 
+
     placeholder="exemple@email.com"
+
     [class.input-error]="formErrors.email"
+
     (blur)="validateAddForm()">
+
 </div>
+
+
 
 <div class="form-group">
+
   <label>Téléphone <span style="color: #ef4444;">*</span></label>
+
   <div *ngIf="formErrors.phone" class="error-message">{{ formErrors.phone }}</div>
+
   <input 
+
     type="tel" 
+
     [(ngModel)]="newEmployee.phone" 
+
     name="phone" 
+
     placeholder="+216 12 345 678"
+
     [class.input-error]="formErrors.phone"
+
     (blur)="validateAddForm()">
+
 </div>
 
-    <!-- Département -->
-    <div class="form-group">
-      <label>Département <span style="color: #ef4444;">*</span></label> 
-      <select [(ngModel)]="newEmployee.departement.id" name="departmentId">
-        <option [value]="null">-- Sans département --</option>
-        <option *ngFor="let dept of allDepartments" [value]="dept.id">{{ dept.name }}</option>
+
+
+        <div class="form-group">
+
+      <label>Région</label> 
+
+      <select 
+
+          [(ngModel)]="newEmployeeRegionId" 
+
+          (ngModelChange)="onNewEmployeeRegionChange($event)" 
+
+          name="newEmployeeRegionId">
+
+        <option [value]="null">-- Toutes les régions --</option>
+
+        <option *ngFor="let region of regions" [value]="region.id">{{ region.name }}</option>
+
       </select>
-      <div *ngIf="formErrors.departement" class="error-message">
-        {{ formErrors.departement }}
-      </div>
+
     </div>
+
+
+
+        <div class="form-group">
+
+      <label>Département <span style="color: #ef4444;">*</span></label> 
+
+      <select [(ngModel)]="newEmployee.departement.id" name="newDepartmentId" (change)="validateAddForm()">
+
+        <option [ngValue]="null">-- Sans département --</option>
+
+        <option 
+
+            *ngFor="let dept of getDepartmentsByRegion(newEmployeeRegionId)" 
+
+            [value]="dept.id">
+
+            {{ dept.name }}
+
+        </option>
+
+      </select>
+
+      <div *ngIf="formErrors.departement" class="error-message">
+
+        {{ formErrors.departement }}
+
+      </div>
+
+    </div>
+
+
 
     <div class="form-actions">
+
       <button type="button" class="btn-secondary" (click)="cancelAdd()">Annuler</button>
+
       <button type="submit" class="btn-primary">Ajouter</button>
+
     </div>
+
   </form>
+
 </div>
+
   
 
-  <!-- TABLEAU DES EMPLOYES -->
-  <div class="table-card">
+
+
+    <div class="table-card">
+
     <div class="table-container">
+
       <table>
+
         <thead>
+
           <tr>
+
             <th>ID</th>
+
             <th>Nom</th>
+
             <th>Adresse</th>
+
             <th>Email</th>
+
             <th>Téléphone</th>
+
             <th>Département</th>
+                <th>Région</th>
+
+
             <th>Actions</th>
+
           </tr>
+
         </thead>
+
         <tbody>
+
           <tr *ngFor="let emp of filteredEmployees">
+
             <td><span class="badge">{{ emp.id }}</span></td>
+
             <td>{{ emp.name }}</td>
+
             <td>{{ emp.address }}</td>
+
             <td><a [href]="'mailto:' + emp.email" class="email-link">{{ emp.email }}</a></td>
+
             <td>{{ emp.phone }}</td>
+
             <td>{{ emp.departement?.name ?? 'Non assigné' }}</td>
+             <td>{{ emp.departement?.region?.name ?? 'Non assigné' }}</td>
+
             <td>
+
               <button class="btn-edit" (click)="editEmployee(emp.id)">
+
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
                   <path d="M12 20h9"/>
+
                   <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+
                 </svg>
+
               </button>
+
               <button class="btn-delete" (click)="deleteEmployee(emp.id)">
+
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
                   <polyline points="3 6 5 6 21 6"/>
+
                   <path d="M19 6l-1 14H6L5 6"/>
+
                   <path d="M10 11v6"/>
+
                   <path d="M14 11v6"/>
+
                 </svg>
+
               </button>
+
             </td>
+
           </tr>
+
            <tr *ngIf="filteredEmployees.length === 0">
+
             <td colspan="7" class="empty-state">Aucun employé correspondant aux filtres</td>
+
           </tr>
+
         </tbody>
+
       </table>
+
     </div>
+
   </div>
 
-  <!-- MODAL EDIT -->
-  <div class="modal-edit" [class.show]="showEditModal">
+
+
+    <div class="modal-edit" [class.show]="showEditModal">
+
     <div class="modal-content-edit">
+
       <div class="modal-header">
+
         <h3>Modifier l'employé</h3>
+
         <button class="btn-close" (click)="closeEdit()">×</button>
+
       </div>
+
       <form class="form-grid" (submit)="saveEdit(); $event.preventDefault()">
+
         <div class="form-group">
+
           <label>Nom complet</label>
+
           <input type="text" [(ngModel)]="editedEmployee.name" name="editName" required>
+
         </div>
+
         <div class="form-group">
+
           <label>Adresse</label>
+
           <input type="text" [(ngModel)]="editedEmployee.address" name="editAddress" required>
+
         </div>
+
         <div class="form-group">
+
           <label>Email</label>
+
           <input type="email" [(ngModel)]="editedEmployee.email" name="editEmail" required>
+
         </div>
+
         <div class="form-group">
+
           <label>Téléphone</label>
+
           <input type="text" [(ngModel)]="editedEmployee.phone" name="editPhone" required>
+
         </div>
-        <div class="form-group">
-          <label>Département</label>
-          <!-- ✅ Utilise allDepartments pour toujours avoir la liste complète -->
-          <select 
-            [ngModel]="editedEmployee?.departement?.id" 
-            (ngModelChange)="editedEmployee.departement = editedEmployee.departement || {}; editedEmployee.departement.id = $event"
-            name="editDepartmentId">
-            <option [value]="null">-- Sans département --</option>
-            <option *ngFor="let dept of allDepartments" [value]="dept.id">{{ dept.name }}</option>
-          </select>
-        </div>
+
+        
+
+                   <div class="edit-section assignment-info">
+                <h4>Affectation & Déplacement</h4>
+
+                <div class="form-group">
+                    <label>Région</label>
+                    <select 
+                        [(ngModel)]="editedEmployeeRegionId"
+                        (change)="onEditedEmployeeRegionChange(editedEmployeeRegionId)"
+                        name="editEmployeeRegionId">
+                        <option [value]="null">-- Toutes les régions --</option>
+                        <option *ngFor="let region of regions" [value]="region.id">
+                            {{ region.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Département</label>
+                    <select 
+                        [ngModel]="editedEmployee?.departement?.id" 
+                        (ngModelChange)="editedEmployee.departement = editedEmployee.departement || {}; editedEmployee.departement.id = $event"
+                        name="editDepartmentId">
+                        <option [value]="null">-- Sans département --</option>
+                        
+                        <option 
+                            *ngFor="let dept of getDepartmentsByRegion(editedEmployeeRegionId)" 
+                            [value]="dept.id">
+                            {{ dept.name }}
+                        </option>
+                        
+                    </select>
+                </div>
+            </div>
+
+        
+
         <div class="form-actions">
+
           <button type="button" class="btn-secondary" (click)="closeEdit()">Annuler</button>
+
           <button type="submit" class="btn-primary">Modifier</button>
+
         </div>
+
       </form>
+
     </div>
+
   </div>
+
+
+

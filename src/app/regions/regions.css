@@ -1,314 +1,451 @@
-.page-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
+/* ======================================= */
+/* 1. Reset & Global Styles */
+/* ======================================= */
+:root {
+  --primary: #007bff;
+  --primary-hover: #0056b3;
+  --secondary: #6c757d;
+  --success: #28a745;
+  --danger: #dc3545;
+  --bg-light: #f8f9fa;
+  --border-color: #e9ecef;
+  --card-bg: #ffffff;
+  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.1);
+  --radius: 8px;
 }
 
-.page-header {
+/* Ensure font and sizing is clean */
+.page-container {
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  background-color: var(--bg-light);
+  min-height: 100vh;
+}
+
+/* Transitions pour un meilleur ressenti */
+button, .region-card, .departement-card, .employe-card {
+  transition: all 0.2s ease-in-out;
+}
+
+/* ======================================= */
+/* 2. Split Master-Detail Layout */
+/* ======================================= */
+.split-container {
+  display: flex;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.master, .detail {
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-light);
+  padding: 20px;
+  overflow-y: auto; /* Permet le scroll si le contenu est trop long */
+}
+
+.master {
+  flex: 0 0 350px; /* Taille fixe pour le Master */
+  height: calc(100vh - 40px);
+}
+
+.detail {
+  flex: 1; /* Prend l'espace restant */
+  height: calc(100vh - 40px);
+}
+
+/* Mobile-First: Stacking columns on small screens */
+@media (max-width: 992px) {
+  .split-container {
+    flex-direction: column;
+  }
+  .master, .detail {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 400px;
+  }
+  /* Cacher la liste Master si un Département est sélectionné en mode mobile */
+  .detail:has(.btn-back) + .master {
+    display: none;
+  }
+}
+
+/* ======================================= */
+/* 3. Header & Utility Styles */
+/* ======================================= */
+.page-header, .detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 10px;
 }
 
-.header-content h1 {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1a202c;
-  margin: 0 0 0.5rem 0;
-}
-
-.header-content h1 svg {
-  width: 32px;
-  height: 32px;
-  color: #667eea;
-}
-
-.subtitle {
-  color: #718096;
-  font-size: 0.95rem;
-  margin: 0;
-}
-
-.btn-primary, .btn-secondary, .btn-delete {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 10px;
+h2 {
+  color: var(--primary-hover);
+  font-size: 1.8rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.95rem;
 }
 
+/* Metadata */
+.detail-meta {
+  color: var(--secondary);
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* ======================================= */
+/* 4. Buttons */
+/* ======================================= */
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: var(--primary);
   color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-}
-
-.btn-primary svg {
-  width: 20px;
-  height: 20px;
-}
-
-.btn-secondary {
-  background: #e2e8f0;
-  color: #4a5568;
-}
-
-.btn-secondary:hover {
-  background: #cbd5e0;
+  background-color: var(--primary-hover);
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.4);
 }
 
 .btn-delete {
-  width: 100%;
-  justify-content: center;
-  background: #fee;
-  color: #e53e3e;
-  border-radius: 8px;
-  padding: 0.625rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  opacity: 0.7;
+  padding: 5px;
 }
 
 .btn-delete:hover {
-  background: #fdd;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.2);
-}
-
-.btn-delete svg {
-  width: 18px;
-  height: 18px;
-}
-
-.add-form-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  margin-bottom: 2rem;
-  overflow: hidden;
-  max-height: 0;
-  opacity: 0;
-  transition: all 0.4s ease;
-}
-
-.add-form-card.show {
-  max-height: 500px;
   opacity: 1;
-  margin-bottom: 2rem;
+  transform: scale(1.1);
 }
 
-.card-header {
-  padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #f6f8fb 0%, #e9ecf2 100%);
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.card-header h3 {
+.btn-back {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--secondary);
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin: 0;
-  color: #2d3748;
-  font-size: 1.25rem;
+  gap: 5px;
 }
 
-.card-header svg {
-  width: 24px;
-  height: 24px;
-  color: #667eea;
+.btn-back:hover {
+  background-color: var(--bg-light);
+  color: var(--primary);
 }
 
-.form-container {
-  padding: 2rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: #4a5568;
-  font-size: 0.9rem;
-}
-
-.form-group label svg {
-  width: 16px;
-  height: 16px;
-  color: #667eea;
-}
-
-.form-group input {
-  padding: 0.875rem 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  background: white;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.form-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.regions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
+/* ======================================= */
+/* 5. Region Cards (Master) */
+/* ======================================= */
 .region-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 1.5rem;
-  transition: all 0.3s ease;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--card-bg);
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
   cursor: pointer;
 }
 
 .region-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
 }
 
-.card-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(240, 147, 251, 0.3);
+.region-card.selected {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
 }
 
-.card-icon svg {
-  width: 28px;
-  height: 28px;
+.region-card.selected h3 {
   color: white;
 }
 
-.card-content {
-  flex: 1;
-}
-
-.card-id {
-  margin-bottom: 0.5rem;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.625rem;
-  background: linear-gradient(135deg, #fef3e7 0%, #fee9d7 100%);
-  color: #e67e22;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.75rem;
-  letter-spacing: 0.5px;
-}
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #2d3748;
+.region-card h3 {
+  font-size: 1.1rem;
   margin: 0;
-  line-height: 1.4;
+  color: #343a40;
 }
 
-.card-actions {
-  padding-top: 1rem;
-  border-top: 1px solid #f1f5f9;
+.region-card.selected .btn-delete {
+  color: white;
 }
 
-.empty-state {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 4rem 2rem;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+/* ======================================= */
+/* 6. Department & Employee Cards (Detail) */
+/* ======================================= */
+.departement-card {
+  padding: 15px 10px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background-color: var(--bg-light);
+  border-left: 5px solid var(--primary);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
-.empty-state svg {
-  width: 64px;
-  height: 64px;
-  color: #cbd5e0;
-  margin-bottom: 1.5rem;
+.departement-card.clickable > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.empty-state h3 {
-  font-size: 1.5rem;
-  color: #2d3748;
-  margin: 0 0 0.5rem 0;
+.departement-card:hover {
+  background-color: #e2f0ff;
 }
 
-.empty-state p {
-  color: #718096;
+.dept-name {
+  font-weight: 600;
+  color: #343a40;
   font-size: 1rem;
-  margin-bottom: 2rem;
 }
 
-@media (max-width: 768px) {
-  .page-container {
-    padding: 1rem;
-  }
-
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .regions-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-container {
-    padding: 1.5rem;
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-  }
-
-  .form-actions button {
-    width: 100%;
-  }
+/* Employe Cards */
+.employes-list {
+  padding-top: 15px;
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .regions-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.employe-card {
+  background-color: var(--card-bg);
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 15px;
+  border-left: 4px solid var(--success);
+}
+
+.employe-card h4 {
+  margin: 0 0 5px 0;
+  color: #343a40;
+  font-size: 1.1rem;
+}
+
+.employe-email, .employe-phone {
+  margin: 3px 0;
+  font-size: 0.9rem;
+  color: var(--secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Nested Employee List (si on garde la double logique) */
+.employes-list.nested {
+  margin-top: 10px;
+  border-top: 1px dashed var(--border-color);
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+.employes-list.nested .employe-card {
+  background-color: #fffaf0; /* Couleur différente pour l'imbrication */
+  border-left-color: #ffc107;
+}
+
+/* ======================================= */
+/* 7. Search & Form */
+/* ======================================= */
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 10px 40px 10px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.search-container input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.btn-clear {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--secondary);
+}
+
+/* Modal Form Styles */
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-secondary {
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* ======================================= */
+/* 8. Success Message & Modals */
+/* ======================================= */
+.success-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: var(--success);
+  color: white;
+  padding: 15px 25px;
+  border-radius: var(--radius);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+}
+
+.success-message.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.3s, transform 0.3s, visibility 0s;
+}
+
+.success-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.success-icon {
+  font-size: 1.2rem;
+}
+
+/* Modal Overlays */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: var(--radius);
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transform: scale(0.95);
+  transition: transform 0.2s ease-out;
+}
+
+.modal-overlay.show .modal-content {
+  transform: scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--secondary);
+}
+
+/* ======================================= */
+/* 9. Empty States */
+/* ======================================= */
+.empty-state, .empty-state-detail, .no-selection {
+  text-align: center;
+  padding: 40px 20px;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius);
+  margin-top: 30px;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.empty-state h3, .no-selection h3 {
+  color: #343a40;
+  margin-top: 0;
+  font-size: 1.3rem;
+}
+
+.empty-state p, .no-selection p {
+  color: var(--secondary);
+  margin-bottom: 20px;
+}
+
+.no-selection {
+  background-color: var(--bg-light);
+  border: none;
+  padding-top: 150px; /* Centrage visuel dans le panneau de détail */
 }

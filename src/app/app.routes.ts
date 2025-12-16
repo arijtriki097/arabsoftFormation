@@ -21,11 +21,7 @@ export const routes: Routes = [
     loadComponent: () => import('./regions/regions').then(m => m.RegionsComponent),
     canActivate: [authGuard]
   },
-   {
-    path: 'regions/:id',
-    loadComponent: () => import('./regions/region-details.component').then(m => m.RegionDetailsComponent),
-    canActivate: [authGuard]
-  },
+ 
   {
     path: 'departements/:id',
     loadComponent: () => import('./departements/DepartementDetailsComponent').then(m => m.DepartementDetailsComponent),

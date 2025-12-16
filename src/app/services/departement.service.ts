@@ -50,5 +50,9 @@ export class DepartementService {
     return this.http.put(`${this.baseUrl}/${id}`, body);
   }
 
+getByRegion(regionId: number): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/region/${regionId}`);
+}
+
 
 }

@@ -33,7 +33,7 @@ export class DepartementDetailsComponent implements OnInit {
     this.loading = true;
     this.departementService.getById(id).subscribe({
       next: (data) => {
-        console.log("Détails département:", data);
+       
         this.departement = data;
         this.employes = data.employes || [];
         this.filteredEmployes = this.employes;
@@ -69,10 +69,12 @@ export class DepartementDetailsComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/regions', this.departement.region.id]);
+    this.router.navigate(['/departments']);
   }
 
   goToRegion() {
     this.router.navigate(['/regions', this.departement.region.id]);
   }
+
+  
 }
