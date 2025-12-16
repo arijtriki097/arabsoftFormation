@@ -279,4 +279,8 @@ export class DepartementsComponent implements OnInit {
     this.successMessage = '';
   }
   
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658

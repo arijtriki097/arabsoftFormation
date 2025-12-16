@@ -138,6 +138,7 @@ export class RegionsComponent implements OnInit {
     }, 3000);
   }
 
+<<<<<<< HEAD
  deleteRegion(id: number) {
 
   // Récupérer la région avec ses départements
@@ -213,6 +214,44 @@ private performDeleteRegion(id: number) {
     this.filteredEmployes = this.employes;
   }
 
+=======
+  deleteRegion(id: number) {
+    if (!confirm("Voulez-vous vraiment supprimer cette région ?")) return;
+    this.regionService.delete(id).subscribe({
+      next: () => {
+        if (this.selectedRegion?.id === id) {
+          this.selectedRegion = null;
+          this.departements = [];
+          this.filteredDepartements = [];
+        }
+        this.loadRegions();
+        this.showSuccess('Région supprimée avec succès');
+      },
+      error: (err) => console.error("Erreur suppression région:", err)
+    });
+  }
+
+  // Filtrage des employés
+  filterEmployes() {
+    if (!this.searchEmployeTerm.trim()) {
+      this.filteredEmployes = this.employes;
+      return;
+    }
+    const term = this.searchEmployeTerm.toLowerCase().trim();
+    this.filteredEmployes = this.employes.filter(emp =>
+      emp.name?.toLowerCase().includes(term) ||
+      emp.email?.toLowerCase().includes(term) ||
+      emp.phone?.includes(term) ||
+      (emp.id && emp.id.toString().includes(term))
+    );
+  }
+
+  clearEmployeSearch() {
+    this.searchEmployeTerm = '';
+    this.filteredEmployes = this.employes;
+  }
+
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
   // Retour à la région depuis un département
   backToRegion() {
     this.selectedDepartement = null;
@@ -225,7 +264,10 @@ private performDeleteRegion(id: number) {
     this.expandedDeptId = null; 
     this.selectedDepartement = null;
     this.filteredEmployes = [];
+<<<<<<< HEAD
     
+=======
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
     return;
   }
 
@@ -238,7 +280,10 @@ private performDeleteRegion(id: number) {
       this.employes = data.employes || [];
       this.filteredEmployes = this.employes;
       this.cdRef.detectChanges();
+<<<<<<< HEAD
       
+=======
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
     },
     error: (err) => {
       console.error("Erreur chargement employés:", err);

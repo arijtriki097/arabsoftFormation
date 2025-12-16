@@ -26,7 +26,11 @@
              (click)="selectRegion(reg)">
           <div class="region-info">
             <h3>{{ reg.name }}</h3>
+<<<<<<< HEAD
             
+=======
+            <span class="region-id">ID: {{ reg.id }}</span>
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
           </div>
           <button class="btn-delete" 
                   (click)="deleteRegion(reg.id); $event.stopPropagation()"
@@ -57,6 +61,10 @@
             </button>
             <h2>{{ selectedDepartement.name }}</h2>
             <p class="detail-meta">
+<<<<<<< HEAD
+=======
+              ID: {{ selectedDepartement.id }} • 
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
               Région: {{ selectedRegion?.name }} • 
               {{ employes.length }} employé(s)
             </p>
@@ -82,7 +90,11 @@
               <p class="employe-email">📧 {{ emp.email || 'N/A' }}</p>
               <p class="employe-phone">📱 {{ emp.phone || 'N/A' }}</p>
             </div>
+<<<<<<< HEAD
           
+=======
+            <span class="employe-id">ID: {{ emp.id }}</span>
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
           </div>
         </div>
 
@@ -100,7 +112,11 @@
           <div class="detail-header">
             <div>
               <h2>{{ selectedRegion.name }}</h2>
+<<<<<<< HEAD
               <p class="detail-meta"> {{ departements.length }} département(s)</p>
+=======
+              <p class="detail-meta">ID: {{ selectedRegion.id }} • {{ departements.length }} département(s)</p>
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
             </div>
           </div>
 
@@ -119,7 +135,11 @@
           <div *ngFor="let dept of filteredDepartements" class="departement-card clickable">
             <div (click)="selectDepartement(dept)">
               <span class="dept-name">{{ dept.name }}</span>
+<<<<<<< HEAD
              
+=======
+              <span class="dept-id">{{ dept.id }}</span>
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
             </div>
 
             <!-- Liste des employés du département (visible si ouvert) -->
@@ -131,7 +151,11 @@
                     <p class="employe-email">📧 {{ emp.email || 'N/A' }}</p>
                     <p class="employe-phone">📱 {{ emp.phone || 'N/A' }}</p>
                   </div>
+<<<<<<< HEAD
                   
+=======
+                  <span class="employe-id">ID: {{ emp.id }}</span>
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
                 </div>
               </div>
               <ng-template #noEmployes>

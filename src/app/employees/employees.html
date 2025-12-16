@@ -352,6 +352,7 @@
 
 </div>
 
+<<<<<<< HEAD
 
 
         <div class="form-group">
@@ -370,6 +371,14 @@
 
         <option *ngFor="let region of regions" [value]="region.id">{{ region.name }}</option>
 
+=======
+    <!-- Département -->
+    <div class="form-group">
+      <label>Département <span style="color: #ef4444;">*</span></label> 
+      <select [(ngModel)]="newEmployee.departement.id" name="departmentId">
+        <option [ngValue]="null">-- Sans département --</option>
+        <option *ngFor="let dept of allDepartments" [value]="dept.id">{{ dept.name }}</option>
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
       </select>
 
     </div>

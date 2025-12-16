@@ -230,8 +230,126 @@ export class EmployeesComponent implements OnInit {
     // Réinitialiser les messages
     this.closeNotification();
 
+<<<<<<< HEAD
     // Effectuer une validation complète avant l'envoi
     this.validateAddForm();
+=======
+    // ✅ Validation du téléphone
+    if (!this.newEmployee.phone || this.newEmployee.phone.trim().length === 0) {
+      this.showNotification('Le téléphone est obligatoire', 'error');
+      return;
+    }
+
+    const phoneRegex = /^[0-9+\s\-()]{8,}$/;
+    if (!phoneRegex.test(this.newEmployee.phone.trim())) {
+      this.showNotification('Format de téléphone invalide (minimum 8 chiffres)', 'error');
+      return;
+    }
+//departement
+   if (this.newEmployee.departement.id && !this.allDepartments.some(d => d.id == this.newEmployee.departement.id)) {
+  this.showNotification('Département invalide', 'error');
+  return;
+}
+
+    // ✅ Tout est valide, procéder à l'ajout
+    const employeeToSend = {
+      name: this.newEmployee.name.trim(),
+      address: this.newEmployee.address.trim(),
+      email: this.newEmployee.email.trim().toLowerCase(),
+      phone: this.newEmployee.phone.trim(),
+      departement: this.newEmployee.departement?.id ? { id: this.newEmployee.departement.id } : null
+    };
+
+    this.employeeService.add(employeeToSend).subscribe({
+      next: () => {
+        this.showNotification('Employé ajouté avec succès !', 'success');
+        this.cancelAdd();
+        
+        setTimeout(() => {
+          this.loadEmployees();
+        }, 100);
+      },
+      error: (err) => {
+        console.error('Erreur ajout:', err);
+        this.showNotification(
+          err.error?.message || 'Erreur lors de l\'ajout de l\'employé',
+          'error'
+        );
+      }
+    });
+  }
+
+  cancelAdd() {
+    this.showAddForm = false;
+    this.newEmployee = { 
+      id: null,
+      name: '', 
+      address: '', 
+      email: '', 
+      phone: '', 
+      departement: { id: null } 
+    };
+  }
+      validateAddForm() {
+        // Nom
+              const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/; 
+          if (!this.newEmployee.name || this.newEmployee.name.trim() === '') {
+            this.formErrors.name = 'Le nom est obligatoire';
+          } else if (this.newEmployee.name.trim().length < 3) {
+            this.formErrors.name = 'Le nom doit contenir au moins 3 caractères';
+          } else if (!nameRegex.test(this.newEmployee.name.trim())) {
+            this.formErrors.name = 'Le nom ne doit contenir que des lettres';
+          } else {
+            this.formErrors.name = '';
+          }
+
+        // Adresse
+        if (!this.newEmployee.address || this.newEmployee.address.trim() === '') {
+          this.formErrors.address = 'L\'adresse est obligatoire';
+        } else {
+          this.formErrors.address = '';
+        }
+
+        // Email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!this.newEmployee.email || this.newEmployee.email.trim() === '') {
+          this.formErrors.email = 'L\'email est obligatoire';
+        } else if (!emailRegex.test(this.newEmployee.email)) {
+          this.formErrors.email = 'Format d\'email invalide';
+        } else if (this.employees.some(emp => emp.email.toLowerCase() === this.newEmployee.email.toLowerCase())) {
+          this.formErrors.email = 'Cet email est déjà utilisé';
+        } else {
+          this.formErrors.email = '';
+        }
+
+        // Téléphone
+        const phoneRegex = /^[0-9+\s\-()]{8,}$/;
+        if (!this.newEmployee.phone || this.newEmployee.phone.trim() === '') {
+          this.formErrors.phone = 'Le téléphone est obligatoire';
+        } else if (!phoneRegex.test(this.newEmployee.phone.trim())) {
+          this.formErrors.phone = 'Format de téléphone invalide (minimum 8 chiffres)';
+        } else {
+          this.formErrors.phone = '';
+        }
+
+        //  Validation du département
+        if (!this.newEmployee.departement?.id) {
+          this.formErrors.departement = 'Le département est obligatoire';
+          return;
+        } else {
+          this.formErrors.departement = '';
+        }
+
+
+      }
+
+  // ============================================================
+  // 📌 MODIFICATION D'EMPLOYÉ AVEC VALIDATIONS
+  // ============================================================
+  editEmployee(id: number) {
+    this.showViewModal = false;
+    this.selectedEmployee = null;
+>>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
     
     // Vérifier s'il y a des erreurs
     const hasErrors = Object.values(this.formErrors).some(error => error !== '');
