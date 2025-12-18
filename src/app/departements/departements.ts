@@ -14,23 +14,17 @@ import { Router } from '@angular/router';
 })
 export class DepartementsComponent implements OnInit {
 
-  // --------------------------
   // Services
-  // --------------------------
   departementService = inject(DepartementService);
   regionService = inject(RegionService);
   cdRef = inject(ChangeDetectorRef);
   router = inject(Router);
 
-  // --------------------------
   // Données
-  // --------------------------
   departements: any[] = [];
   regions: any[] = [];
 
-  // --------------------------
   // Formulaire ajout
-  // --------------------------
   showAddForm = false;
 
   newDepartement = {
@@ -38,15 +32,11 @@ export class DepartementsComponent implements OnInit {
     regionId: ''
   };
 
-  // --------------------------
-  // Notifications globales
-  // --------------------------
+  // Notifications
   errorMessage = '';
   successMessage = '';
 
-  // --------------------------
-  // Modal d'édition
-  // --------------------------
+  // Modal édition
   showEditModal = false;
 
   editDepartement: any = {
@@ -55,48 +45,40 @@ export class DepartementsComponent implements OnInit {
     regionId: ''
   };
 
-
   // ============================================================
-  // 📌 CHARGEMENT DES DONNÉES
+  // CHARGEMENT
   // ============================================================
 
   ngOnInit(): void {
-    this.loadRegions(); 
+    this.loadRegions();
   }
 
   loadRegions() {
     this.regionService.getAll().subscribe({
       next: regions => {
         this.regions = regions;
-        
-
-        // Charger les départements après avoir récupéré les régions
         this.loadDepartements();
       },
-      error: err => console.error("Erreur récupération régions:", err)
+      error: err => console.error('Erreur récupération régions:', err)
     });
   }
 
   loadDepartements() {
     this.departementService.getAll().subscribe({
       next: data => {
-        this.departements = data.map(dep => {
-          return { 
-            ...dep, 
-            regionName: dep.region ? dep.region.name : 'Région inconnue',
-            // S'assurer que les employés sont bien présents (utiliser employes avec 's')
-            employes: dep.employes || []
-          };
-        });
+        this.departements = data.map(dep => ({
+          ...dep,
+          regionName: dep.region ? dep.region.name : 'Région inconnue',
+          employes: dep.employes || []
+        }));
         this.cdRef.detectChanges();
       },
-      error: err => console.error("Erreur chargement départements:", err)
+      error: err => console.error('Erreur chargement départements:', err)
     });
   }
 
-
   // ============================================================
-  // 📌 AJOUT
+  // AJOUT
   // ============================================================
 
   addDepartement() {
@@ -105,25 +87,23 @@ export class DepartementsComponent implements OnInit {
     const name = this.newDepartement.name.trim();
     const regionId = Number(this.newDepartement.regionId);
 
-    if (!name) return this.showError("Le nom du département est obligatoire !");
-    if (!regionId) return this.showError("Veuillez sélectionner une région !");
+    if (!name) return this.showError('Le nom du département est obligatoire !');
+    if (!regionId) return this.showError('Veuillez sélectionner une région !');
 
-    // Vérifier existence
     const exists = this.departements.some(
       dep => dep.name.toLowerCase() === name.toLowerCase() && dep.regionId === regionId
     );
+
     if (exists) {
-      return this.showError("Un département avec ce nom existe déjà dans cette région !");
+      return this.showError('Un département avec ce nom existe déjà dans cette région !');
     }
 
     this.departementService.add({ name }, regionId, this.regions).subscribe({
       next: () => {
-        this.showSuccess("Département ajouté avec succès !");
+        this.showSuccess('Département ajouté avec succès !');
         this.loadDepartements();
-
         this.newDepartement = { name: '', regionId: '' };
 
-        // Fermer après délai
         setTimeout(() => {
           this.showAddForm = false;
           this.successMessage = '';
@@ -143,65 +123,49 @@ export class DepartementsComponent implements OnInit {
   }
 
   // ============================================================
-  // 📌 SUPPRESSION AVEC VÉRIFICATION EMPLOYÉS
+  // SUPPRESSION (AVEC EMPLOYÉS)
   // ============================================================
 
   deleteDepartement(id: number) {
-    
-    // Récupérer les détails du département depuis l'API
     this.departementService.getById(id).subscribe({
-      next: (departement) => {
+      next: departement => {
+        const count = departement.employes?.length || 0;
 
-        const hasEmployees = departement.employes && departement.employes.length > 0;
-        const employeeCount = hasEmployees ? departement.employes.length : 0;
+        const message = count > 0
+          ? `⚠️ ATTENTION ⚠️\n\nCe département contient ${count} employé(s).\n\nContinuer ?`
+          : 'Voulez-vous vraiment supprimer ce département ?';
 
-        let confirmMessage = '';
-        
-        if (hasEmployees) {
-          // Message si hasEmployees
-          confirmMessage = `⚠️ ATTENTION ⚠️\n\n` +
-            `Ce département contient ${employeeCount} employé(s).\n\n` +
-            `Si vous supprimez ce département, tous les employés associés perdront leur affectation.\n\n` +
-            `Êtes-vous sûr de vouloir continuer ?`;
-        } else {
-          // Message standard si pas d'employés
-          confirmMessage = "Voulez-vous vraiment supprimer ce département ?";
-        }
-
-        // Demander confirmation
-        if (confirm(confirmMessage)) {
-          this.performDelete(id, hasEmployees, employeeCount);
+        if (confirm(message)) {
+          this.performDelete(id, count);
         }
       },
-      error: (err) => {
-        // En cas d'erreur, on demande quand même confirmation
-        if (confirm("Voulez-vous vraiment supprimer ce département ?")) {
-          this.performDelete(id, false, 0);
+      error: () => {
+        if (confirm('Voulez-vous vraiment supprimer ce département ?')) {
+          this.performDelete(id, 0);
         }
       }
     });
   }
 
-  // Méthode privée pour effectuer la suppression
-  private performDelete(id: number, hadEmployees: boolean, employeeCount: number = 0) {
+  private performDelete(id: number, employeeCount: number) {
     this.departementService.delete(id).subscribe({
       next: () => {
-        if (hadEmployees) {
-          this.showSuccess(`Département supprimé. ${employeeCount} employé(s) ont été désaffectés.`);
+        if (employeeCount > 0) {
+          this.showSuccess(`Département supprimé. ${employeeCount} employé(s) désaffectés.`);
         } else {
-          this.showSuccess("Département supprimé avec succès !");
+          this.showSuccess('Département supprimé avec succès !');
         }
         this.loadDepartements();
       },
       error: err => {
-        console.error("Erreur suppression:", err);
-        this.showError("Erreur lors de la suppression du département.");
+        console.error('Erreur suppression:', err);
+        this.showError('Erreur lors de la suppression du département.');
       }
     });
   }
 
   // ============================================================
-  // 📌 NAVIGATION DÉTAILS
+  // NAVIGATION
   // ============================================================
 
   viewDepartementDetails(id: number) {
@@ -209,17 +173,15 @@ export class DepartementsComponent implements OnInit {
   }
 
   // ============================================================
-  // 📌 MODAL → ÉDITION
+  // ÉDITION
   // ============================================================
 
   openEditModal(dep: any) {
     this.editDepartement = {
       id: dep.id,
       name: dep.name,
-      regionId: dep.region?.id || ''  
+      regionId: dep.region?.id || ''
     };
-    
-   
     this.showEditModal = true;
   }
 
@@ -233,10 +195,10 @@ export class DepartementsComponent implements OnInit {
 
     if (!this.editDepartement.id) return;
     if (!this.editDepartement.name.trim()) {
-      return this.showError("Le nom du département est obligatoire !");
+      return this.showError('Le nom du département est obligatoire !');
     }
     if (!this.editDepartement.regionId) {
-      return this.showError("Veuillez sélectionner une région !");
+      return this.showError('Veuillez sélectionner une région !');
     }
 
     const updated = {
@@ -244,24 +206,22 @@ export class DepartementsComponent implements OnInit {
       regionId: Number(this.editDepartement.regionId)
     };
 
-  
-
     this.departementService.updateDepartement(this.editDepartement.id, updated)
       .subscribe({
         next: () => {
           this.closeEditModal();
-          this.showSuccess("Département mis à jour avec succès !");
+          this.showSuccess('Département mis à jour avec succès !');
           this.loadDepartements();
         },
-        error: (err) => {
+        error: err => {
           console.error('Erreur mise à jour:', err);
-          this.showError("Erreur lors de la modification.");
+          this.showError('Erreur lors de la modification.');
         }
       });
   }
 
   // ============================================================
-  // 📌 NOTIFICATIONS
+  // NOTIFICATIONS
   // ============================================================
 
   showError(message: string, duration = 3500) {
@@ -278,9 +238,4 @@ export class DepartementsComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
   }
-  
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
