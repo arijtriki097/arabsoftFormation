@@ -1,17 +1,30 @@
 <div class="page-container">
-  <div class="page-header">
-    <div class="header-content">
-      <h1>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="7" height="7"/>
-          <rect x="14" y="3" width="7" height="7"/>
-          <rect x="14" y="14" width="7" height="7"/>
-          <rect x="3" y="14" width="7" height="7"/>
-        </svg>
-        Gestion des Départements
-      </h1>
-      <p class="subtitle">{{ departements.length }} département(s) enregistré(s)</p>
-    </div>
+<div class="page-header">
+  <div class="header-content">
+    <h1>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"/>
+        <rect x="14" y="3" width="7" height="7"/>
+        <rect x="14" y="14" width="7" height="7"/>
+        <rect x="3" y="14" width="7" height="7"/>
+      </svg>
+      Gestion des Départements
+    </h1>
+    <p class="subtitle">{{ departements.length }} département(s) enregistré(s)</p>
+  </div>
+
+  <div class="header-buttons">
+     <select [(ngModel)]="selectedRegionIdForReport" class="custom-select" style="width: 200px; height: 50px; border-radius: 8px;">
+    <option [ngValue]="null">Choisir une région</option>
+    <option *ngFor="let r of regions" [ngValue]="r.id">
+      {{ r.name }}
+    </option>
+  </select>
+     <!-- Bouton Générer PDF -->
+<button class="btn-report" (click)="downloadDepartementReport(selectedRegionIdForReport)">
+      <span class="icon">📊</span>
+      Générer Rapport PDF
+    </button>
     <button class="btn-primary" (click)="showAddForm = !showAddForm">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="12" y1="5" x2="12" y2="19"/>
@@ -19,7 +32,11 @@
       </svg>
       {{ showAddForm ? 'Annuler' : 'Nouveau département' }}
     </button>
+
+   
   </div>
+</div>
+
 
   <!-- Alertes globales - EN DEHORS du formulaire -->
   <div *ngIf="successMessage" class="alert alert-success">
@@ -115,8 +132,8 @@
   </div>
 
   <!-- Liste des départements -->
-  <div class="departments-grid">
-    <div *ngFor="let dep of departements" class="department-card"  (click)="viewDepartementDetails(dep.id)">
+  <div class="departments-grid" *ngIf="filteredDepartements.length > 0">
+    <div *ngFor="let dep of filteredDepartements" class="department-card"  (click)="viewDepartementDetails(dep.id)">
       <div class="card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="7" height="7"/>
@@ -158,10 +175,24 @@
 
       </div>
     </div>
-
-
-   
   </div>
+  
+<!-- CONDITION LISTE VIDE -->
+<div class="empty-state" *ngIf="filteredDepartements.length === 0">
+  <div class="empty-state-content">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="empty-icon">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <h3>Aucun département trouvé</h3>
+    <p>Il n'y a pas de départements enregistrés pour la région sélectionnée.</p>
+    <button class="btn-secondary" (click)="selectedRegionIdForReport = null" style="margin-top: 15px;">
+      Afficher tous les départements
+    </button>
+  </div>
+</div>
+
   <!-- MODAL MODIFICATION -->
 <div class="modal-backdrop" *ngIf="showEditModal">
   <div class="modal-card" [class.show]="showEditModal">

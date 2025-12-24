@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DepartementService } from '../services/departement.service';
 import { RegionService } from '../services/region.service';
 import { Router } from '@angular/router';
+import { ReportService, ReportType } from '../services/ReportService';
 
 @Component({
   selector: 'app-departements',
@@ -13,6 +14,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./departements.css']
 })
 export class DepartementsComponent implements OnInit {
+
+
+    selectedRegionIdForReport: number | null = null;
+
+    
+ private reportService = inject(ReportService);
+   notification = { show: false, message: '', type: 'info' as 'success' | 'error' | 'info' };
 
   // Services
   departementService = inject(DepartementService);
@@ -238,4 +246,44 @@ export class DepartementsComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
   }
+
+
+ showNotification(message: string, type: 'success' | 'error' | 'info'): void {
+    this.notification = { show: true, message, type };
+    setTimeout(() => this.notification.show = false, 4000);
+  }
+
+  // Télécharger le PDF des départements
+ downloadDepartementReport(regionId: number | null): void {
+    this.reportService.downloadReport(ReportType.DEPARTEMENT, regionId).subscribe({
+      next: (blob: Blob) => {
+        // Personnalisation du nom du fichier selon le filtre
+        const regionName = regionId ? 
+            this.regions.find(r => r.id === regionId)?.name : 
+            'Tous';
+        
+        this.downloadBlob(blob, `rapport_departements_${regionName}`);
+      },
+      error: () => this.showNotification('Erreur lors du téléchargement du PDF', 'error')
+    });
+  }
+
+
+  private downloadBlob(blob: Blob, filenamePrefix: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filenamePrefix}_report_${new Date().getTime()}.pdf`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    this.showNotification('Rapport téléchargé avec succès !', 'success');
+  }
+
+   get filteredDepartements() {
+    if (!this.selectedRegionIdForReport) {
+      return this.departements;
+    }
+    return this.departements.filter(dep => dep.region?.id === this.selectedRegionIdForReport);
+  }
+
 }

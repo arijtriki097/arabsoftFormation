@@ -8,15 +8,19 @@
     </div>
   </div>
 
-
   <div class="split-container">
     <!-- Master: Liste des régions -->
     <div class="master">
       <div class="page-header">
         <h2>Régions ({{ regions.length }})</h2>
+         <button class="btn-report" (click)="downloadRegionReport()">
+                    📊 Générer Rapport PDF
+                  </button>
         <button class="btn-primary" (click)="openAddModal()">
           Nouvelle région
         </button>
+
+       
       </div>
 
       <div *ngIf="regions.length > 0; else emptyState">
@@ -26,11 +30,7 @@
              (click)="selectRegion(reg)">
           <div class="region-info">
             <h3>{{ reg.name }}</h3>
-<<<<<<< HEAD
-            
-=======
-            <span class="region-id">ID: {{ reg.id }}</span>
->>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
+           
           </div>
           <button class="btn-delete" 
                   (click)="deleteRegion(reg.id); $event.stopPropagation()"
@@ -61,10 +61,7 @@
             </button>
             <h2>{{ selectedDepartement.name }}</h2>
             <p class="detail-meta">
-<<<<<<< HEAD
-=======
-              ID: {{ selectedDepartement.id }} • 
->>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
+             
               Région: {{ selectedRegion?.name }} • 
               {{ employes.length }} employé(s)
             </p>
@@ -90,11 +87,7 @@
               <p class="employe-email">📧 {{ emp.email || 'N/A' }}</p>
               <p class="employe-phone">📱 {{ emp.phone || 'N/A' }}</p>
             </div>
-<<<<<<< HEAD
-          
-=======
-            <span class="employe-id">ID: {{ emp.id }}</span>
->>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
+            
           </div>
         </div>
 
@@ -107,75 +100,83 @@
       </div>
 
       <!-- Vue région avec liste des départements -->
-      <ng-template #regionDetail>
-        <div *ngIf="selectedRegion; else noSelection">
-          <div class="detail-header">
-            <div>
-              <h2>{{ selectedRegion.name }}</h2>
-<<<<<<< HEAD
-              <p class="detail-meta"> {{ departements.length }} département(s)</p>
-=======
-              <p class="detail-meta">ID: {{ selectedRegion.id }} • {{ departements.length }} département(s)</p>
->>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
-            </div>
-          </div>
+     <ng-template #regionDetail>
+  <div *ngIf="selectedRegion; else noSelection">
+    <div class="detail-header">
+      <div>
+        <h2>{{ selectedRegion.name }}</h2>
+        <p class="detail-meta">
+          ID: {{ selectedRegion.id }} • {{ selectedRegion.departementCount }} département(s)
+        </p>
+      </div>
+    </div>
 
-          <div class="search-container">
-            <input type="text" 
-                   placeholder="🔍 Rechercher un département" 
-                   [(ngModel)]="searchTerm" 
-                   (input)="filterDepartements()" />
-            <button *ngIf="searchTerm" 
-                    class="btn-clear" 
-                    (click)="clearSearch()">
-              ×
-            </button>
-          </div>
+    <div class="search-container">
+      <input type="text" 
+             placeholder="🔍 Rechercher un département" 
+             [(ngModel)]="searchTerm" 
+             (input)="filterDepartements()" />
+      <button *ngIf="searchTerm" 
+              class="btn-clear" 
+              (click)="clearSearch()">
+        ×
+      </button>
 
-          <div *ngFor="let dept of filteredDepartements" class="departement-card clickable">
-            <div (click)="selectDepartement(dept)">
-              <span class="dept-name">{{ dept.name }}</span>
-<<<<<<< HEAD
-             
-=======
-              <span class="dept-id">{{ dept.id }}</span>
->>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
-            </div>
+    </div>
 
-            <!-- Liste des employés du département (visible si ouvert) -->
-            <div *ngIf="expandedDeptId === dept.id" class="employes-list nested">
-              <div *ngIf="dept.employes?.length > 0; else noEmployes">
-                <div *ngFor="let emp of dept.employes" class="employe-card">
-                  <div class="employe-info">
-                    <h4>{{ emp.name }}</h4>
-                    <p class="employe-email">📧 {{ emp.email || 'N/A' }}</p>
-                    <p class="employe-phone">📱 {{ emp.phone || 'N/A' }}</p>
-                  </div>
-<<<<<<< HEAD
-                  
-=======
-                  <span class="employe-id">ID: {{ emp.id }}</span>
->>>>>>> 89945c38d57db64dc73d4b119559d92eaadbf658
-                </div>
-              </div>
-              <ng-template #noEmployes>
-                <div class="empty-state-detail">
-                  <div class="empty-icon">👤</div>
-                  <p>Aucun employé trouvé pour ce département</p>
-                </div>
-              </ng-template>
-            </div>
-          </div>
+  
+  
+  
+  
+  
+    <!-- Liste des départements -->
+    <div *ngIf="filteredDepartements.length > 0; else emptyDepartements">
+      <div *ngFor="let dept of filteredDepartements" class="departement-card clickable">
+        <div (click)="selectDepartement(dept)">
+          <span class="dept-name">{{ dept.name }}</span>
         </div>
 
-        <ng-template #noSelection>
-          <div class="no-selection">
-            <div class="empty-icon">👈</div>
-            <h3>Sélectionnez une région</h3>
-            <p>Choisissez une région dans la liste pour voir ses départements</p>
+        <!-- Liste des employés du département -->
+        <div *ngIf="expandedDeptId === dept.id" class="employes-list nested">
+          <div *ngIf="dept.employes?.length > 0; else noEmployes">
+            <div *ngFor="let emp of dept.employes" class="employe-card">
+              <div class="employe-info">
+                <h4>{{ emp.name }}</h4>
+                <p class="employe-email">📧 {{ emp.email || 'N/A' }}</p>
+                <p class="employe-phone">📱 {{ emp.phone || 'N/A' }}</p>
+              </div>
+              <span class="employe-id">ID: {{ emp.id }}</span>
+            </div>
           </div>
-        </ng-template>
-      </ng-template>
+          <ng-template #noEmployes>
+            <div class="empty-state-detail">
+              <div class="empty-icon">👤</div>
+              <p>Aucun employé trouvé pour ce département</p>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message si aucun département -->
+    <ng-template #emptyDepartements>
+      <div class="empty-state-detail">
+        <div class="empty-icon">📂</div>
+        <h3>Aucun département trouvé</h3>
+        <p>Cette région n'a pas encore de département enregistré.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #noSelection>
+    <div class="no-selection">
+      <div class="empty-icon">👈</div>
+      <h3>Sélectionnez une région</h3>
+      <p>Choisissez une région dans la liste pour voir ses départements</p>
+    </div>
+  </ng-template>
+</ng-template>
+
     </div>
   </div>
 
@@ -194,8 +195,7 @@
                  placeholder="Ex: Tunis, Sousse, ..." 
                  [(ngModel)]="newRegion.name" 
                  name="name" 
-                 required 
-                 autofocus />
+                 required />
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-secondary" (click)="closeAddModal()">

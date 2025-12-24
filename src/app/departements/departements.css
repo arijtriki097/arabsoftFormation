@@ -491,3 +491,111 @@
 @media (min-width: 769px) and (max-width: 1024px) {
   .departments-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.header-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.btn-report {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+  transition: all 0.3s ease;
+}
+
+.btn-report:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.45);
+}
+
+.btn-report:active {
+  transform: scale(0.97);
+}
+
+.btn-report .icon {
+  font-size: 1.1rem;
+}
+
+/* Responsive */
+@media(max-width:768px) {
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  background: #f9fafb;
+  border: 2px dashed #e5e7eb;
+  border-radius: 16px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.empty-state-content h3 {
+  color: #374151;
+  font-size: 1.25rem;
+  margin: 15px 0 5px;
+}
+
+.empty-state-content p {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  color: #9ca3af;
+  margin: 0 auto;
+}
+
+/* Style général du select */
+.custom-select {
+  width: 220px;               
+  height: 50px;
+  padding: 0 15px;             
+  border-radius: 12px;       
+  border: 1px solid #d1d5db;   
+  background-color: #fff;     
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;              
+  appearance: none;            
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><polygon points="0,0 16,0 8,8" fill="%236366f1"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+}
+
+/* Focus */
+.custom-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 5px rgba(99,102,241,0.4);
+}
+
+/* Option hover */
+.custom-select option:hover {
+  background-color: #f3f4f6; 
+  color: #111827;            
+}

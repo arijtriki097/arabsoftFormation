@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RegionService } from '../services/region.service';
 import { DepartementService } from '../services/departement.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ReportService, ReportType } from '../services/ReportService';
 
 @Component({
   selector: 'app-regions',
@@ -14,7 +15,10 @@ import { ActivatedRoute, Router } from '@angular/router';
   encapsulation: ViewEncapsulation.None
 })
 export class RegionsComponent implements OnInit {
+private reportService = inject(ReportService);
 
+  // Notification simple
+  notification = { show: false, message: '', type: 'info' as 'success' | 'error' | 'info' };
   regionService = inject(RegionService);
   departementService = inject(DepartementService);
   route = inject(ActivatedRoute);
@@ -40,20 +44,20 @@ export class RegionsComponent implements OnInit {
   searchEmployeTerm = '';
   expandedDeptId: number | null = null;
 
-  // ============================================================
+  
   ngOnInit() {
     this.loadRegions();
   }
 
-  // ============================================================
   // REGIONS
-  // ============================================================
+
   loadRegions() {
     this.loading = true;
     this.regionService.getAll().subscribe({
       next: data => {
         this.regions = data ?? [];
         this.loading = false;
+        this.cdRef.detectChanges();
       },
       error: err => {
         console.error('Erreur load regions:', err);
@@ -103,9 +107,9 @@ export class RegionsComponent implements OnInit {
     });
   }
 
-  // ============================================================
+  
   // DEPARTEMENTS
-  // ============================================================
+
   loadDepartements(regionId: number) {
     this.loading = true;
     this.regionService.getById(regionId).subscribe({
@@ -113,6 +117,7 @@ export class RegionsComponent implements OnInit {
         this.departements = data.departements ?? [];
         this.filteredDepartements = [...this.departements];
         this.loading = false;
+         this.cdRef.detectChanges();
       },
       error: err => {
         console.error('Erreur chargement départements:', err);
@@ -138,9 +143,9 @@ export class RegionsComponent implements OnInit {
     this.filteredDepartements = [...this.departements];
   }
 
-  // ============================================================
+  
   // EMPLOYES
-  // ============================================================
+ 
   selectDepartement(dept: any) {
     if (this.expandedDeptId === dept.id) {
       this.resetDepartementSelection();
@@ -183,9 +188,9 @@ export class RegionsComponent implements OnInit {
     this.resetDepartementSelection();
   }
 
-  // ============================================================
+
   // ADD REGION
-  // ============================================================
+  
   openAddModal() {
     this.showAddModal = true;
   }
@@ -211,7 +216,7 @@ export class RegionsComponent implements OnInit {
     });
   }
 
-  // ============================================================
+  
   showSuccess(message: string) {
     this.successMessage = message;
     this.showSuccessMessage = true;
@@ -231,5 +236,27 @@ export class RegionsComponent implements OnInit {
     this.employes = [];
     this.filteredEmployes = [];
     this.searchEmployeTerm = '';
+  }
+
+   showNotification(message: string, type: 'success' | 'error' | 'info'): void {
+    this.notification = { show: true, message, type };
+    setTimeout(() => this.notification.show = false, 4000);
+  }
+
+  // Télécharger le PDF des régions
+  downloadRegionReport(): void {
+    this.reportService.downloadReport(ReportType.REGION).subscribe({
+      next: (blob: Blob) => this.downloadBlob(blob, 'regions'),
+      error: () => this.showNotification('Erreur lors du téléchargement du PDF', 'error')
+    });
+  }
+  private downloadBlob(blob: Blob, filenamePrefix: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filenamePrefix}_report_${new Date().getTime()}.pdf`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+    this.showNotification('Rapport téléchargé avec succès !', 'success');
   }
 }

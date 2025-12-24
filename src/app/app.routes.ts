@@ -32,6 +32,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./components/protected/protected.component').then(m => m.ProtectedComponent)
   },
+
   {
     path: '**',
     redirectTo: ''
