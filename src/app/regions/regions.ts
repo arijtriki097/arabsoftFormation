@@ -42,7 +42,7 @@ private reportService = inject(ReportService);
   employes: any[] = [];
   filteredEmployes: any[] = [];
   searchEmployeTerm = '';
-  expandedDeptId: number | null = null;
+  expandedDeptId: number | null = null
 
   
   ngOnInit() {
@@ -145,27 +145,30 @@ private reportService = inject(ReportService);
 
   
   // EMPLOYES
- 
-  selectDepartement(dept: any) {
-    if (this.expandedDeptId === dept.id) {
-      this.resetDepartementSelection();
-      return;
-    }
-
-    this.expandedDeptId = dept.id;
-    this.selectedDepartement = dept;
-
-    this.departementService.getById(dept.id).subscribe({
-      next: data => {
-        this.employes = data.employes ?? [];
-        this.filteredEmployes = [...this.employes];
-      },
-      error: () => {
-        this.employes = [];
-        this.filteredEmployes = [];
-      }
-    });
+selectDepartement(dept: any) {
+  if (this.expandedDeptId === dept.id) {
+    // Si on clique sur le même département, on le ferme
+    this.expandedDeptId = null;
+    return;
   }
+
+  // Charger les employés AVANT d'ouvrir le département
+  this.departementService.getById(dept.id).subscribe({
+    next: data => {
+      // Stocker les employés directement dans l'objet département
+      dept.employes = data.employes ?? [];
+      // Ouvrir le département APRÈS avoir chargé les données
+      this.expandedDeptId = dept.id;
+      this.cdRef.detectChanges();
+    },
+    error: () => {
+      dept.employes = [];
+      this.expandedDeptId = dept.id;
+      this.cdRef.detectChanges();
+    }
+  });
+}
+
 
   filterEmployes() {
     const term = this.searchEmployeTerm.trim().toLowerCase();
@@ -182,6 +185,8 @@ private reportService = inject(ReportService);
   clearEmployeSearch() {
     this.searchEmployeTerm = '';
     this.filteredEmployes = [...this.employes];
+    this.cdRef.detectChanges();
+
   }
 
   backToRegion() {
@@ -201,6 +206,7 @@ private reportService = inject(ReportService);
   }
 
   addRegion() {
+    
     if (!this.newRegion.name.trim()) {
       alert('Le nom de la région est obligatoire');
       return;
@@ -245,18 +251,20 @@ private reportService = inject(ReportService);
 
   // Télécharger le PDF des régions
   downloadRegionReport(): void {
-    this.reportService.downloadReport(ReportType.REGION).subscribe({
-      next: (blob: Blob) => this.downloadBlob(blob, 'regions'),
-      error: () => this.showNotification('Erreur lors du téléchargement du PDF', 'error')
-    });
-  }
-  private downloadBlob(blob: Blob, filenamePrefix: string): void {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filenamePrefix}_report_${new Date().getTime()}.pdf`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-    this.showNotification('Rapport téléchargé avec succès !', 'success');
-  }
+  this.reportService.downloadReport(ReportType.REGION).subscribe({
+    next: (blob: Blob) => {
+      const filename = `regions_report.pdf`;
+
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+
+      this.showNotification('Rapport téléchargé avec succès !', 'success');
+    },
+    error: () => this.showNotification('Erreur lors du téléchargement du PDF', 'error')
+  });
+}
+
 }

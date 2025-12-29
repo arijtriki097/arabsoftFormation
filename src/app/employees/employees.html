@@ -39,6 +39,11 @@
   </div>
 
   <div class="header-actions">
+     <!-- Bouton Fichier PDF -->
+    <button class="btn-fiche" (click)="downloadAllFiches()">
+      <span class="icon">🧾</span>
+      {{ getBoutonFicheText() }}
+    </button>
     <!-- Bouton Rapport PDF -->
     <button class="btn-report" (click)="downloadEmployeeReport()">
       <span class="icon">📊</span>
@@ -56,6 +61,27 @@
 
 
 <div class="filters">
+   <!-- Champ de recherche par matricule -->
+  <div class="form-group search-group">
+    <label>Rechercher (Matricule ou Nom)</label>
+    <div class="search-input-wrapper">
+      <input 
+        type="text" 
+        [(ngModel)]="searchMatricule" 
+        (input)="onSearchMatricule()"
+        placeholder="Entrez un matricule ou nom..."
+        class="search-input"
+      />
+      <button 
+        *ngIf="searchMatricule" 
+        class="btn-clear-search" 
+        (click)="clearSearch()"
+        title="Effacer la recherche">
+        ✕
+      </button>
+     
+    </div>
+  </div>
   <div class="form-group">
     <label>Filtrer par Région</label>
     <select [(ngModel)]="selectedRegionId" (change)="onRegionChange()">
@@ -72,7 +98,10 @@
     </select>
   </div>
 
-  <button class="btn-secondary" (click)="resetFilters()">Réinitialiser les filtres</button>
+  <button class="btn-secondary btn-reset" (click)="resetFilters()"> 
+    <span class=reload>&#x21bb;</span>
+      Réinitialiser
+  </button> 
 </div>
 
 <div class="add-form-card" [class.show]="showAddForm">
@@ -129,17 +158,50 @@
   </form>
 </div>
 
+
+
+<div class="selection-bar" *ngIf="selectedEmployeeIds.length > 0">
+  <span class="selection-info">
+    ✓ {{ selectedEmployeeIds.length }} employé(s) sélectionné(s)
+  </span>
+  <button class="btn-clear-selection" (click)="deselectAllEmployees()">
+    Désélectionner tout
+  </button>
+</div>
+
 <div class="table-card">
   <div class="table-container">
     <table>
       <thead>
         <tr>
-          <th>Nom</th><th>Adresse</th><th>Email</th><th>Téléphone</th><th>Département</th><th>Région</th><th>Actions</th>
+          <th class="checkbox-col">
+            <input 
+              type="checkbox" 
+              [checked]="selectedEmployeeIds.length === filteredEmployees.length && filteredEmployees.length > 0"
+              (change)="selectedEmployeeIds.length === filteredEmployees.length ? deselectAllEmployees() : selectAllEmployees()"
+              title="Tout sélectionner / Tout désélectionner"
+            />
+          </th>
+          <th>Matricule</th>
+          <th>Nom</th>
+          <th>Adresse</th>
+          <th>Email</th>
+          <th>Téléphone</th>
+          <th>Département</th>
+          <th>Région</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let emp of filteredEmployees">
-          
+        <tr *ngFor="let emp of paginatedEmployees" [class.selected-row]="isEmployeeSelected(emp.id)">
+          <td class="checkbox-col">
+            <input 
+              type="checkbox" 
+              [checked]="isEmployeeSelected(emp.id)"
+              (change)="toggleEmployeeSelection(emp.id)"
+            />
+          </td>
+          <td>{{ emp.matricule }}</td>
           <td>{{ emp.name }}</td>
           <td>{{ emp.address }}</td>
           <td><a [href]="'mailto:' + emp.email" class="email-link">{{ emp.email }}</a></td>
@@ -151,13 +213,45 @@
             <button class="btn-delete" (click)="deleteEmployee(emp.id)">🗑️</button>
           </td>
         </tr>
-        <tr *ngIf="filteredEmployees.length === 0">
-          <td colspan="8" class="empty-state">Aucun employé correspondant aux filtres</td>
+        <tr *ngIf="paginatedEmployees.length === 0">
+          <td colspan="9" class="empty-state">Aucun employé correspondant aux filtres</td>
         </tr>
       </tbody>
     </table>
   </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="filteredEmployees.length > 0">
+    <div class="pagination-info">
+      Affichage {{ (currentPage - 1) * itemsPerPage + 1 }} - 
+      {{ Math.min(currentPage * itemsPerPage, filteredEmployees.length) }} 
+      sur {{ filteredEmployees.length }} employé(s)
+    </div>
+    
+    <div class="pagination-controls">
+      <button 
+        class="btn-pagination" 
+        [disabled]="currentPage === 1" 
+        (click)="previousPage()"
+        title="Page précédente">
+        ← Précédent
+      </button>
+      
+      <span class="page-indicator">
+        Page {{ currentPage }} / {{ totalPages }}
+      </span>
+      
+      <button 
+        class="btn-pagination" 
+        [disabled]="currentPage === totalPages" 
+        (click)="nextPage()"
+        title="Page suivante">
+        Suivant →
+      </button>
+    </div>
+  </div>
 </div>
+
 
 <div class="modal-edit" [class.show]="showEditModal">
   <div class="modal-content-edit">

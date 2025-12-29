@@ -8,6 +8,7 @@ import { EmployeeService } from '../services/employee.service';
 import { DepartementService } from '../services/departement.service';
 import { RegionService } from '../services/region.service';
 import { ReportService, ReportType } from '../services/ReportService';
+import { serviceFiche } from '../services/serviceFiche';
 
 @Component({
   selector: 'app-employees',
@@ -21,45 +22,59 @@ export class EmployeesComponent implements OnInit {
 
 
 
- private reportService = inject(ReportService);
+// RECHERCHE
+searchMatricule: string = '';
+Math = Math; 
+ 
 
 
 
-  // ============================================================
-  // 🔧 SERVICES
-  // ============================================================
+
+  // SERVICES
+  serviceFiche = inject(serviceFiche)
   employeeService = inject(EmployeeService);
   departmentService = inject(DepartementService);
   regionService = inject(RegionService);
   cdRef = inject(ChangeDetectorRef);
- route = inject(ActivatedRoute);
+  route = inject(ActivatedRoute);
   router = inject(Router);
-  // ============================================================
-  // 📦 DONNÉES
-  // ============================================================
+  private reportService = inject(ReportService);
+
+
+  // PAGINATION
+currentPage: number = 1;
+itemsPerPage: number = 5;
+totalPages: number = 0;
+paginatedEmployees: any[] = [];
+
+
+
+  //  DONNÉES
+selectedEmployeeIds: number[] = [];
   employees: any[] = [];
   filteredEmployees: any[] = [];
 
   regions: any[] = [];
   departments: any[] = [];        // filtres
+
   allDepartments: any[] = [];     // formulaires
 
-  // ============================================================
-  // 🔎 FILTRES TABLEAU
-  // ============================================================
+
+  // FILTRES TABLEAU
+
   selectedRegionId: number | null = null;
   selectedDepartementId: number | null = null;
 
-  // ============================================================
-  // 🪟 UI / MODALS
-  // ============================================================
+
+  //  UI / MODALS
+
   showAddForm = false;
   showEditModal = false;
   showViewModal = false;
 
-  // ============================================================
-  // ➕ AJOUT
-  // ============================================================
+
+  // AJOUT
+
   newEmployeeRegionId: number | null = null;
 
   newEmployee: any = {
@@ -70,9 +85,9 @@ export class EmployeesComponent implements OnInit {
     departement: { id: null }
   };
 
-  // ============================================================
-  // ✏️ ÉDITION
-  // ============================================================
+
+  // ÉDITION
+
   editedEmployeeRegionId: number | null = null;
 
   editedEmployee: any = {
@@ -86,9 +101,9 @@ export class EmployeesComponent implements OnInit {
 
   selectedEmployee: any = null;
 
-  // ============================================================
-  // ❗ VALIDATION
-  // ============================================================
+
+  // VALIDATION
+
   formErrors: any = {
     name: '',
     address: '',
@@ -97,18 +112,18 @@ export class EmployeesComponent implements OnInit {
     departement: ''
   };
 
-  // ============================================================
-  // 🔔 NOTIFICATIONS
-  // ============================================================
+
+  // NOTIFICATIONS
+
   notification = {
     show: false,
     message: '',
     type: 'success' as 'success' | 'error' | 'info'
   };
 
-  // ============================================================
-  // 🚀 INIT
-  // ============================================================
+
+  // INIT
+
   ngOnInit(): void {
     forkJoin({
       regions: this.regionService.getAll(),
@@ -124,9 +139,9 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  // ============================================================
-  // 📥 EMPLOYÉS
-  // ============================================================
+
+  // EMPLOYÉS
+
   loadEmployees(): void {
     this.employeeService.getAll().subscribe({
       next: (data) => {
@@ -138,9 +153,9 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  // ============================================================
-  // 🔎 FILTRES - CORRIGÉ AVEC CONVERSION DE TYPE
-  // ============================================================
+
+  // FILTRES AVEC CONVERSION DE TYPE
+
   onRegionChange(): void {
     // Convertir en nombre pour comparaison correcte
     const regionId = this.selectedRegionId ? Number(this.selectedRegionId) : null;
@@ -156,15 +171,21 @@ export class EmployeesComponent implements OnInit {
   }
 
   onDepartementChange(): void {
+    this.selectedEmployeeIds = [];
     this.applyFilters();
   }
 
   applyFilters(): void {
+
     // Convertir les IDs en nombres pour comparaison correcte
     const regionId = this.selectedRegionId ? Number(this.selectedRegionId) : null;
     const deptId = this.selectedDepartementId ? Number(this.selectedDepartementId) : null;
+    const searchTerm = this.searchMatricule.trim().toLowerCase();
+
 
     this.filteredEmployees = this.employees.filter(emp => {
+
+
       // Filtre par région
       if (regionId && Number(emp.departement?.region?.id) !== regionId) {
         return false;
@@ -175,27 +196,47 @@ export class EmployeesComponent implements OnInit {
         return false;
       }
 
+        // Filtre par matricule
+      if (searchTerm) {
+  const matriculeMatch = emp.matricule?.toLowerCase().includes(searchTerm);
+  const nameMatch = emp.name?.toLowerCase().startsWith(searchTerm);
+  
+  if (!matriculeMatch && !nameMatch) {
+    return false;
+  }}
+
+
       return true;
     });
 
-    console.log('Filtres appliqués:', {
-      regionId,
-      deptId,
-      totalEmployees: this.employees.length,
-      filteredCount: this.filteredEmployees.length
-    });
+    //pagination
+    this.updatePagination();
   }
 
   resetFilters(): void {
     this.selectedRegionId = null;
     this.selectedDepartementId = null;
+    this.searchMatricule = '';
+    this.selectedEmployeeIds = []
     this.departments = [...this.allDepartments];
     this.applyFilters();
   }
 
-  // ============================================================
-  // 🧭 RÉGION → DÉPARTEMENTS
-  // ============================================================
+onSearchMatricule(): void {
+  this.currentPage = 1; // Retour à la page 1 lors de la recherche
+  this.selectedEmployeeIds = []; // Désélectionner les employés
+  this.applyFilters();
+}
+
+clearSearch(): void {
+  this.searchMatricule = '';
+  this.onSearchMatricule();
+}
+
+
+
+  // RÉGION → DÉPARTEMENTS
+
   getDepartmentsByRegion(regionId: number | null): any[] {
     if (!regionId) return this.allDepartments;
 
@@ -224,9 +265,9 @@ export class EmployeesComponent implements OnInit {
     this.editedEmployee.departement.id = null;
   }
 
-  // ============================================================
-  // ➕ AJOUT
-  // ============================================================
+
+  // AJOUT
+
   addEmployee(): void {
     this.validateAddForm();
     if (Object.values(this.formErrors).some(e => e)) {
@@ -285,9 +326,9 @@ export class EmployeesComponent implements OnInit {
     this.formErrors.region = 'Région obligatoire';
   }
 
-  // ============================================================
-  // ✏️ ÉDITION
-  // ============================================================
+
+  // ÉDITION
+
   editEmployee(id: number): void {
     this.employeeService.getById(id).subscribe({
       next: emp => {
@@ -332,9 +373,9 @@ export class EmployeesComponent implements OnInit {
     this.editedEmployeeRegionId = null;
   }
 
-  // ============================================================
-  // 🗑️ SUPPRESSION
-  // ============================================================
+
+  // SUPPRESSION
+  
   deleteEmployee(id: number): void {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet employé ?')) return;
 
@@ -347,9 +388,9 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  // ============================================================
-  // 🔔 NOTIFICATIONS
-  // ============================================================
+ 
+  // NOTIFICATIONS
+  
   showNotification(message: string, type: 'success' | 'error' | 'info'): void {
     this.notification = { show: true, message, type };
     setTimeout(() => this.notification.show = false, 3000);
@@ -364,25 +405,181 @@ export class EmployeesComponent implements OnInit {
 
 
   // Télécharger le PDF filtré
-  downloadEmployeeReport(): void {
-    this.reportService.downloadReport(
-      ReportType.EMPLOYE,
-      this.selectedRegionId,
-      this.selectedDepartementId
-    ).subscribe({
-      next: (blob: Blob) => this.downloadBlob(blob, 'employes'),
-      error: () => this.showNotification('Erreur lors du téléchargement du PDF', 'error')
-    });
+ downloadEmployeeReport(): void {
+  this.reportService.downloadReport(
+    ReportType.EMPLOYE,
+    this.selectedRegionId,
+    this.selectedDepartementId
+  ).subscribe({
+    next: (blob: Blob) => {
+      const deptName = this.selectedDepartementId
+        ? this.departments.find((d: any) => d.id === this.selectedDepartementId)?.name
+        : 'Tous';
+       const filename = `rapport_employes_${deptName}.pdf`;
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+      this.showNotification('Rapport téléchargé avec succès !', 'success');
+    },
+    error: () => this.showNotification('Erreur lors du téléchargement du PDF', 'error')
+  });
+}
+
+
+
+downloadAllFiches(): void {
+  let body: any = null;
+  let params: any = {};
+
+  // CAS 1 : employés sélectionnés
+  if (this.selectedEmployeeIds.length > 0) {
+    body = { employeIds: this.selectedEmployeeIds };
   }
 
-  private downloadBlob(blob: Blob, filenamePrefix: string): void {
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filenamePrefix}_report_${new Date().getTime()}.pdf`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-    this.showNotification('Rapport téléchargé avec succès !', 'success');
+
+  // CAS 2 : filtrer par département / région
+  else if (this.selectedDepartementId || this.selectedRegionId) {
+
+    if (this.selectedDepartementId) 
+      params.departementId = this.selectedDepartementId;
+
+    if (this.selectedRegionId) 
+      params.regionId = this.selectedRegionId;
   }
 
+  // CAS 3 : aucun filtre → tous les employés (body et params restent null)
+
+  this.serviceFiche.getFiches(body, params).subscribe({
+    next: (blob: Blob) => {
+      let filename = 'fiches_employes.pdf';
+
+      if (this.selectedEmployeeIds.length > 0) {
+
+        filename = `fiches_${this.selectedEmployeeIds.length}_employes_selectionnes.pdf`;
+      } else if (this.selectedDepartementId) {
+        const dept = this.departments.find(d => Number(d.id) === Number(this.selectedDepartementId));
+        filename = `fiches_departement_${dept?.name || this.selectedDepartementId}.pdf`;
+      } else if (this.selectedRegionId) {
+        const region = this.regions.find(r => Number(r.id) === Number(this.selectedRegionId));
+        filename = `fiches_region_${region?.name || this.selectedRegionId}.pdf`;
+      }
+
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      this.showNotification('Fiches téléchargées avec succès', 'success');
+    },
+    error: () => {
+      this.showNotification('Erreur lors du téléchargement des fiches', 'error');
+    }
+  });
+}
+
+
+
+
+getBoutonFicheText(): string {
+
+  // CAS 1 : Employés sélectionnés
+  if (this.selectedEmployeeIds.length > 0) {
+    return `Télécharger ${this.selectedEmployeeIds.length} fiche(s) sélectionnée(s)`;
+  }
+
+
+  // CAS 2 : Filtre par département et région
+  else if (this.selectedDepartementId || this.selectedRegionId) {
+    let text = 'Télécharger fiches';
+    
+    if (this.selectedDepartementId) {
+      const dept = this.departments.find(d => Number(d.id) === Number(this.selectedDepartementId));
+      text += ` - Département ${dept?.name || this.selectedDepartementId}`;
+    }
+
+    if (this.selectedRegionId) {
+      const region = this.regions.find(r => Number(r.id) === Number(this.selectedRegionId));
+      text += ` - Région ${region?.name || this.selectedRegionId}`;
+    }
+
+    return text;
+  }
+
+
+  // CAS 3 : Tout
+  else {
+    return 'Télécharger toutes les fiches';
+  }
+
+}
+
+
+
+// Méthodes utilitaires pour gérer la sélection (checkboxes)
+toggleEmployeeSelection(employeeId: number): void {
+  const index = this.selectedEmployeeIds.indexOf(employeeId);
+  if (index > -1) {
+    this.selectedEmployeeIds.splice(index, 1);
+  } else {
+    this.selectedEmployeeIds.push(employeeId);
+  }
+}
+
+isEmployeeSelected(employeeId: number): boolean {
+  return this.selectedEmployeeIds.includes(employeeId);
+}
+
+selectAllEmployees(): void {
+  this.selectedEmployeeIds = this.filteredEmployees.map(emp => emp.id);
+}
+
+deselectAllEmployees(): void {
+  this.selectedEmployeeIds = [];
+}
+
+
+
+// Méthode appelée après applyFilters()
+updatePagination(): void {
+  this.totalPages = Math.ceil(this.filteredEmployees.length / this.itemsPerPage);
+  
+  // Réinitialiser à la page 1 si la page actuelle dépasse le total
+  if (this.currentPage > this.totalPages) {
+    this.currentPage = 1;
+  }
+  
+  this.updatePaginatedEmployees();
+}
+
+updatePaginatedEmployees(): void {
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+  this.paginatedEmployees = this.filteredEmployees.slice(startIndex, endIndex);
+}
+
+goToPage(page: number): void {
+  if (page >= 1 && page <= this.totalPages) {
+    this.currentPage = page;
+    this.updatePaginatedEmployees();
+  }
+}
+
+previousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updatePaginatedEmployees();
+  }
+}
+
+nextPage(): void {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updatePaginatedEmployees();
+  }
+}
 }

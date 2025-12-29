@@ -123,13 +123,8 @@
       </button>
 
     </div>
-
   
-  
-  
-  
-  
-    <!-- Liste des départements -->
+   <!-- Liste des départements -->
     <div *ngIf="filteredDepartements.length > 0; else emptyDepartements">
       <div *ngFor="let dept of filteredDepartements" class="departement-card clickable">
         <div (click)="selectDepartement(dept)">
@@ -138,7 +133,7 @@
 
         <!-- Liste des employés du département -->
         <div *ngIf="expandedDeptId === dept.id" class="employes-list nested">
-          <div *ngIf="dept.employes?.length > 0; else noEmployes">
+          <div *ngIf="dept.employes && dept.employes.length > 0; else noEmployes">
             <div *ngFor="let emp of dept.employes" class="employe-card">
               <div class="employe-info">
                 <h4>{{ emp.name }}</h4>

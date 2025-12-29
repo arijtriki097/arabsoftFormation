@@ -243,22 +243,22 @@ import { AuthService } from '../../services/auth.service';
       background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
     }
 
-    /* Hero Section */
+    /* Hero Section - RÉDUIT */
     .hero {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 4rem 2rem;
+      padding: 2rem 2rem; /* Réduit de 4rem à 2rem */
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 4rem;
+      gap: 2rem; /* Réduit de 4rem à 2rem */
       align-items: center;
-      min-height: 80vh;
+      min-height: 60vh; /* Réduit de 80vh à 60vh */
     }
 
     .hero-content {
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      gap: 1.25rem; /* Réduit de 2rem à 1.25rem */
     }
 
     .hero-badge {
@@ -281,7 +281,7 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .hero-title {
-      font-size: 3.5rem;
+      font-size: 3rem; /* Réduit de 3.5rem à 3rem */
       font-weight: 800;
       line-height: 1.2;
       color: #1a202c;
@@ -296,7 +296,7 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .hero-description {
-      font-size: 1.25rem;
+      font-size: 1.1rem; /* Réduit de 1.25rem à 1.1rem */
       color: #718096;
       line-height: 1.6;
       margin: 0;
@@ -312,11 +312,11 @@ import { AuthService } from '../../services/auth.service';
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 1rem 2rem;
+      padding: 0.875rem 1.75rem; /* Réduit de 1rem 2rem */
       border: none;
       border-radius: 12px;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.95rem; /* Réduit de 1rem */
       cursor: pointer;
       transition: all 0.3s ease;
       text-decoration: none;
@@ -349,16 +349,16 @@ import { AuthService } from '../../services/auth.service';
       height: 20px;
     }
 
-    /* Hero Visual */
+    /* Hero Visual - RÉDUIT */
     .hero-visual {
       position: relative;
-      height: 500px;
+      height: 400px; /* Réduit de 500px à 400px */
     }
 
     .floating-card {
       position: absolute;
       background: white;
-      padding: 1.5rem;
+      padding: 1.25rem; /* Réduit de 1.5rem */
       border-radius: 16px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
       display: flex;
@@ -368,9 +368,9 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .floating-card svg {
-      width: 40px;
-      height: 40px;
-      padding: 0.75rem;
+      width: 36px; /* Réduit de 40px */
+      height: 36px;
+      padding: 0.65rem; /* Réduit de 0.75rem */
       border-radius: 12px;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
@@ -379,13 +379,13 @@ import { AuthService } from '../../services/auth.service';
     .floating-card h4 {
       margin: 0 0 0.25rem 0;
       color: #2d3748;
-      font-size: 1.1rem;
+      font-size: 1rem; /* Réduit de 1.1rem */
     }
 
     .floating-card p {
       margin: 0;
       color: #718096;
-      font-size: 0.9rem;
+      font-size: 0.85rem; /* Réduit de 0.9rem */
     }
 
     .card-1 {
@@ -415,40 +415,40 @@ import { AuthService } from '../../services/auth.service';
       }
     }
 
-    /* Features Section */
+    /* Features Section - RÉDUIT */
     .features {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 6rem 2rem;
+      padding: 3rem 2rem; /* Réduit de 6rem à 3rem */
     }
 
     .section-header {
       text-align: center;
-      margin-bottom: 4rem;
+      margin-bottom: 2.5rem; /* Réduit de 4rem à 2.5rem */
     }
 
     .section-header h2 {
-      font-size: 2.5rem;
+      font-size: 2.25rem; /* Réduit de 2.5rem */
       font-weight: 800;
       color: #1a202c;
-      margin: 0 0 1rem 0;
+      margin: 0 0 0.75rem 0; /* Réduit de 1rem */
     }
 
     .section-header p {
-      font-size: 1.1rem;
+      font-size: 1rem; /* Réduit de 1.1rem */
       color: #718096;
       margin: 0;
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Réduit de 320px */
+      gap: 1.5rem; /* Réduit de 2rem */
     }
 
     .feature-card {
       background: white;
-      padding: 2rem;
+      padding: 1.75rem; /* Réduit de 2rem */
       border-radius: 20px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       transition: all 0.3s ease;
@@ -460,18 +460,18 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .feature-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
+      width: 56px; /* Réduit de 64px */
+      height: 56px;
+      border-radius: 14px; /* Réduit de 16px */
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem; /* Réduit de 1.5rem */
     }
 
     .feature-icon svg {
-      width: 32px;
-      height: 32px;
+      width: 28px; /* Réduit de 32px */
+      height: 28px;
       color: white;
     }
 
@@ -488,16 +488,16 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .feature-card h3 {
-      font-size: 1.5rem;
+      font-size: 1.35rem; /* Réduit de 1.5rem */
       font-weight: 700;
       color: #2d3748;
-      margin: 0 0 1rem 0;
+      margin: 0 0 0.875rem 0; /* Réduit de 1rem */
     }
 
     .feature-card p {
       color: #718096;
       line-height: 1.6;
-      margin: 0 0 1.5rem 0;
+      margin: 0 0 1.25rem 0; /* Réduit de 1.5rem */
     }
 
     .feature-link {
@@ -519,18 +519,18 @@ import { AuthService } from '../../services/auth.service';
       height: 16px;
     }
 
-    /* Stats Section */
+    /* Stats Section - RÉDUIT */
     .stats {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 4rem 2rem;
+      padding: 2.5rem 2rem; /* Réduit de 4rem à 2.5rem */
     }
 
     .stats-grid {
       max-width: 1400px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Réduit de 250px */
+      gap: 1.5rem; /* Réduit de 2rem */
     }
 
     .stat-card {
@@ -539,65 +539,66 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .stat-icon {
-      width: 64px;
-      height: 64px;
+      width: 56px; /* Réduit de 64px */
+      height: 56px;
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 16px;
+      border-radius: 14px; /* Réduit de 16px */
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 1rem;
+      margin: 0 auto 0.875rem; /* Réduit de 1rem */
     }
 
     .stat-icon svg {
-      width: 32px;
-      height: 32px;
+      width: 28px; /* Réduit de 32px */
+      height: 28px;
     }
 
     .stat-card h3 {
-      font-size: 1.5rem;
+      font-size: 1.35rem; /* Réduit de 1.5rem */
       font-weight: 700;
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.4rem 0; /* Réduit de 0.5rem */
     }
 
     .stat-card p {
       margin: 0;
       opacity: 0.9;
+      font-size: 0.95rem;
     }
 
-    /* CTA Section */
+    /* CTA Section - RÉDUIT */
     .cta {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 6rem 2rem;
+      padding: 3rem 2rem; /* Réduit de 6rem à 3rem */
     }
 
     .cta-content {
       background: white;
-      padding: 4rem;
+      padding: 2.5rem; /* Réduit de 4rem à 2.5rem */
       border-radius: 24px;
       text-align: center;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     }
 
     .cta-content h2 {
-      font-size: 2.5rem;
+      font-size: 2.25rem; /* Réduit de 2.5rem */
       font-weight: 800;
       color: #1a202c;
-      margin: 0 0 1rem 0;
+      margin: 0 0 0.875rem 0; /* Réduit de 1rem */
     }
 
     .cta-content p {
-      font-size: 1.1rem;
+      font-size: 1rem; /* Réduit de 1.1rem */
       color: #718096;
-      margin: 0 0 2rem 0;
+      margin: 0 0 1.75rem 0; /* Réduit de 2rem */
     }
 
     .btn-large {
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      padding: 1.25rem 2.5rem;
-      font-size: 1.1rem;
+      padding: 1.125rem 2.25rem; /* Réduit de 1.25rem 2.5rem */
+      font-size: 1rem; /* Réduit de 1.1rem */
       box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
     }
 
@@ -607,38 +608,38 @@ import { AuthService } from '../../services/auth.service';
     }
 
     .btn-large svg {
-      width: 24px;
-      height: 24px;
+      width: 22px; /* Réduit de 24px */
+      height: 22px;
     }
 
     /* Responsive */
     @media (max-width: 1024px) {
       .hero {
         grid-template-columns: 1fr;
-        gap: 3rem;
-        padding: 3rem 2rem;
+        gap: 2rem;
+        padding: 2rem;
       }
 
       .hero-visual {
-        height: 400px;
+        height: 350px;
       }
 
       .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.25rem;
       }
     }
 
     @media (max-width: 768px) {
       .hero-title {
-        font-size: 2rem;
+        font-size: 1.75rem;
       }
 
       .hero-description {
-        font-size: 1rem;
+        font-size: 0.95rem;
       }
 
       .section-header h2 {
-        font-size: 2rem;
+        font-size: 1.75rem;
       }
 
       .features-grid {
@@ -650,11 +651,11 @@ import { AuthService } from '../../services/auth.service';
       }
 
       .cta-content {
-        padding: 2rem;
+        padding: 1.75rem;
       }
 
       .cta-content h2 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
       }
 
       .hero-actions {
